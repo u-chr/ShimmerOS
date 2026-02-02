@@ -6,14 +6,27 @@ from subprocess import Popen,check_output
 from time import sleep
 import threading
 import json
+import wmi
 
-cpuman = check_output("wmic cpu get Manufacturer",shell=True)
-Cmanufacturer = cpuman.decode()
-CPUManufacturer = "amd" if ("amd" in Cmanufacturer.lower()) else "intel" if ("intel" in Cmanufacturer.lower()) else "unknown"
+types = ["intel","nvidia","amd"]
+gpumans = []
+cpumans = []
 
-gpuman = check_output("wmic path win32_videocontroller get name",shell=True)
-Gmanufacturer = gpuman.decode()
-GPUManufacturer = "amd" if ("amd" in Gmanufacturer.lower()) else "intel" if ("intel" in Gmanufacturer.lower()) else "nvidia" if ("nvidia" in Gmanufacturer.lower()) else "unknown"
+c = wmi.WMI()
+for cpu in c.Win32_Processor():
+    name = cpu.Name.lower()
+    for t in types:
+        if t in name:
+            cpumans.append(t)
+
+for gpu in c.Win32_VideoController():
+    name = gpu.Name.lower()
+    for t in types:
+        if t in name:
+            gpumans.append(t)
+
+print(f"Detected GPU: {gpumans}")
+print(f"Detected CPU: {cpumans}")
 
 class tweaksPage(ctk.CTkFrame):
     def rmbBind(self,widget,description,directory):
@@ -101,7 +114,8 @@ class tweaksPage(ctk.CTkFrame):
                     "VPN_Support": 1,
                     "Wi-Fi_Support": 1,
                     "Windows_Update": 1,
-                    "ISO_Mount_Support": 0
+                    "Virtual_Disk_Support": 0,
+                    "HAGS": 0
                 }
                 json.dump(data,f,indent=4)
         else:
@@ -129,7 +143,7 @@ class tweaksPage(ctk.CTkFrame):
                     CPUReq = helpdata["cpu"]
             except Exception as e:
                 CPUReq = "none"
-            if not (CPUReq == "none" or CPUReq == CPUManufacturer):
+            if not (CPUReq == "none" or CPUReq in cpumans):
                 continue
 
             try:
@@ -137,7 +151,7 @@ class tweaksPage(ctk.CTkFrame):
                     GPUReq = helpdata["gpu"]
             except Exception as e:
                 GPUReq = "none"
-            if not (GPUReq == "none" or GPUReq == GPUManufacturer):
+            if not (GPUReq == "none" or GPUReq in cpumans):
                 continue
 
             requirementNotMet = False
@@ -203,7 +217,7 @@ class tweaksPage(ctk.CTkFrame):
                 json.dump(data,f,indent=4)
         path = abspath(join(self.master.master.basepath, directory, f"{state}.bat"))
         print(f"Running |{path}|.")
-        self.colourlabel(Popen([f'{path}'], shell=True),frame.nameLabel,("#aaffaa"))
+        self.colourlabel(Popen([f'{path}'], shell=True, text=True),frame.nameLabel,("#aaffaa"))
     def regTweakClicked(self,directory,frame):
         print(f"Running |{directory}|.")
         proc = Popen(["regedit","/s",directory], shell=True)
@@ -218,6 +232,6 @@ class tweaksPage(ctk.CTkFrame):
     def SingleBattweakclicked(self,directory,frame):
         path = abspath(join(self.master.master.basepath, directory, f"action.bat"))
         print(f"Running |{path}|.")
-        proc = Popen([f'{path}'], shell=True)
+        proc = Popen([f'{path}'], shell=True, text=True)
         proc.wait()
         frame.nameLabel.configure(text_color="#aaffaa")

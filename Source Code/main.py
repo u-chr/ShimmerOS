@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
-version = "1.5.1.1"
+version = "1.5.1.2"
+
+
 import customtkinter as ctk
 ctk.set_appearance_mode("dark")
-from pages.sidebar import sidebar
-from pages.homePage import homePage
-from pages.downloadsPage import downloadsPage
-from pages.tweaksPage import tweaksPage
-from pages.toolsPage import toolsPage
-from pages.quickaccessPage import quickaccessPage
-from pages.aboutPage import aboutPage
 from hashlib import sha256
 import threading
 import aiohttp
@@ -161,7 +156,8 @@ class newGUI(ctk.CTk):
         self.dirs = sorted([d for d in listdir(self.basepath) if isdir(join(self.basepath,d))],key=str.casefold)
 
     def shrink(self, widget, width, size):
-        text = widget.cget("text")
+        text = max(widget.cget("text").splitlines(),key=len) + "." #add a tiny bit of extra length
+        
         s = []
         low = max(1, size - 10)
         high = size
@@ -180,10 +176,21 @@ class newGUI(ctk.CTk):
 
     def __init__(self):
         
-
-
         from logger.logger import ConsoleLogger
         self.logger = ConsoleLogger(master=self)
+        from pages.sidebar import sidebar
+        global homePage
+        from pages.homePage import homePage
+        global downloadsPage
+        from pages.downloadsPage import downloadsPage
+        global tweaksPage
+        from pages.tweaksPage import tweaksPage
+        global toolsPage
+        from pages.toolsPage import toolsPage
+        global quickaccessPage
+        from pages.quickaccessPage import quickaccessPage
+        global aboutPage
+        from pages.aboutPage import aboutPage
         print("hello log viewer")
         self.CurrentVersion = version
         self.dirs = "loading"

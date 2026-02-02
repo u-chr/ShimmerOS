@@ -81,7 +81,8 @@ downloads = { #category / [name to display,module location,font size]
         ["Display Driver\nUninstaller","utility.ddu",14],
         ["Radeon Software\nSlimmer","utility.rsslimmer",14],
         ["NVCleanStall","utility.nvcs",20],
-        ["CrystalDiskInfo","utility.cdinfo",20]
+        ["CrystalDiskInfo","utility.cdinfo",20],
+        ["GUI SCEWIN","utility.guiscewin",20]
     ],
     "System Tools": [
         ["Process Lasso","utility.processlasso",19],
@@ -110,7 +111,7 @@ class downloadsPage(ctk.CTkFrame):
         completeLabel = ctk.CTkLabel(appFrame, text=msg, text_color=text_color, font=ctk.CTkFont(size=20))
         self.master.master.shrink(completeLabel,progressbar.winfo_width(),20)
         self.after(0,progressbar.destroy)
-        completeLabel.grid(row=0,column=1,padx=(0,8))
+        completeLabel.grid(row=0,column=1,padx=(0,10))
         if msg == "Error":
             await asyncio.sleep(3)
             self.after(0,completeLabel.destroy)
@@ -121,13 +122,13 @@ class downloadsPage(ctk.CTkFrame):
             btn.grid(row=0,column=1,padx=(0,5),sticky="e")
     async def procedureWorker(self,app,btn):
         p = importlib.import_module(f"downloads.{app[1]}")
-        await p.getURL(self,btn,app[1])
+        await p.getURL(self,btn,app[1],w)
     def download(self,btn,appFrame,name):
-        progressbar = ctk.CTkProgressBar(appFrame,width=btn.winfo_width())
+        progressbar = ctk.CTkProgressBar(appFrame,width=round(w/4))
         self.after(0,btn.destroy)
         progressbar.set(0)
         app = importlib.import_module(f"downloads.{name}")
-        progressbar.grid(row=0,column=1,padx=(0,5),sticky="e")
+        progressbar.grid(row=0,column=1,padx=(0,10),sticky="e")
 
         async def async_download(url,path,progressbar):
             print(f"attempting to download from {url} to {path}")
@@ -173,8 +174,11 @@ class downloadsPage(ctk.CTkFrame):
 
             categoryTitle = ctk.CTkLabel(categoryFrame, text=category + "\n──────────────────────────", font=ctk.CTkFont(size=21))
             categoryTitle.grid(row=0, column=0, pady=(0,5), columnspan=5)
-            
+            global w
             w = round((master.width-master.sb.winfo_width()-100)/4)
+            templabel = ctk.CTkButton(self,text="Download")
+            shrink(templabel,round(w/4),20)
+            stdDLFont = templabel.cget("font")
             print(f"allowing download width of {w}")
             for index,app in enumerate(applications):
                 row = index // 4 + 1
@@ -191,8 +195,7 @@ class downloadsPage(ctk.CTkFrame):
                 
                 appNameLabel = ctk.CTkLabel(appFrame, text=app[0] if not isProcedure else app[0][2:], font=ctk.CTkFont(size=app[2]), text_color="#ffff00" if app[0].startswith("⭐") else "#ffffff")
                 shrink(appNameLabel,round(w/4*3)-20,app[2])
-                appDownloadButton = ctk.CTkButton(appFrame, text="Download", width=round(w/4), font=ctk.CTkFont(size=16))
-                shrink(appDownloadButton,round(w/4),size=16)
+                appDownloadButton = ctk.CTkButton(appFrame, text="Download", width=round(w/4), font=stdDLFont)
                 if isProcedure:
                     appDownloadButton.configure(command=lambda app=app, btn=appDownloadButton: threading.Thread(target=lambda: asyncio.run(self.procedureWorker(app,btn)), daemon=True).start())
                 else:

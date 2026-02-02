@@ -10,16 +10,16 @@ from shutil import copy2,rmtree
 from utils import resource_path
 import zipfile
 ssl_ctx = ssl.create_default_context(cafile=resource_path("dependencies/cacert.pem"))
-async def getURL(self,btn,modulename):
+async def getURL(self,btn,modulename,w):
     DL_DIR = path.join(gettempdir(),"SHIMMERTEMP")
     if not path.exists(DL_DIR):
         mkdir(DL_DIR)
     appFrame = btn.master
     appFrame.application = [None,modulename]
-    progressbar = ctk.CTkProgressBar(appFrame,width=btn.winfo_width())
+    progressbar = ctk.CTkProgressBar(appFrame,width=round(w/4))
     self.after(0,btn.destroy)
     progressbar.set(0)
-    progressbar.grid(row=0,column=1,padx=(0,5),sticky="e")
+    progressbar.grid(row=0,column=1,padx=(0,10),sticky="e")
     async def async_download(url,DLpath,progressbar):
         print(f"attempting to download from {url} to {DLpath}")
         lastUpdateFrac = 0
@@ -46,7 +46,7 @@ async def getURL(self,btn,modulename):
             completeLabel = ctk.CTkLabel(appFrame, text="Error", text_color="#ff5555", font=ctk.CTkFont(size=20))
             self.master.master.shrink(completeLabel,progressbar.winfo_width(),20)
             self.after(0,progressbar.destroy)
-            completeLabel.grid(row=0,column=1,padx=(0,8))
+            completeLabel.grid(row=0,column=1,padx=(0,10))
             
             await asyncio.sleep(3)
             self.after(0,completeLabel.destroy)
@@ -59,7 +59,7 @@ async def getURL(self,btn,modulename):
         completeLabel = ctk.CTkLabel(appFrame, text="Complete", text_color="#55ff55", font=ctk.CTkFont(size=20))
         self.master.master.shrink(completeLabel,progressbar.winfo_width(),20)
         self.after(0,progressbar.destroy)
-        completeLabel.grid(row=0,column=1,padx=(0,8))
+        completeLabel.grid(row=0,column=1,padx=(0,10))
         with zipfile.ZipFile(DLpath, 'r') as zip_ref:
             outputloc = path.join(DL_DIR,"nsudo")
             zip_ref.extractall(outputloc)

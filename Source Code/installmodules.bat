@@ -1,1 +1,1 @@
-pip install customtkinter Pillow pyinstaller aiohttp asyncio beautifulsoup4 requests pywin32 pypiwin32 psutil
+pip install customtkinter Pillow pyinstaller aiohttp asyncio beautifulsoup4 requests pywin32 pypiwin32 psutil wmi
