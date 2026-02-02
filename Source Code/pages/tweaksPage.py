@@ -7,26 +7,35 @@ from time import sleep
 import threading
 import json
 import wmi
+global gpumans
+global cpumans
+import pythoncom
+def getMans():
+    pythoncom.CoInitialize()
+    global gpumans
+    global cpumans
+    types = ["intel","nvidia","amd"]
+    gpumans = []
+    cpumans = []
 
-types = ["intel","nvidia","amd"]
-gpumans = []
-cpumans = []
+    c = wmi.WMI()
+    for cpu in c.Win32_Processor():
+        name = cpu.Name.lower()
+        for t in types:
+            if t in name:
+                cpumans.append(t)
 
-c = wmi.WMI()
-for cpu in c.Win32_Processor():
-    name = cpu.Name.lower()
-    for t in types:
-        if t in name:
-            cpumans.append(t)
+    for gpu in c.Win32_VideoController():
+        name = gpu.Name.lower()
+        for t in types:
+            if t in name:
+                gpumans.append(t)
 
-for gpu in c.Win32_VideoController():
-    name = gpu.Name.lower()
-    for t in types:
-        if t in name:
-            gpumans.append(t)
+    print(f"Detected GPU: {gpumans}")
+    print(f"Detected CPU: {cpumans}")
+    pythoncom.CoUninitialize()
 
-print(f"Detected GPU: {gpumans}")
-print(f"Detected CPU: {cpumans}")
+threading.Thread(target=getMans,daemon=True).start()
 
 class tweaksPage(ctk.CTkFrame):
     def rmbBind(self,widget,description,directory):

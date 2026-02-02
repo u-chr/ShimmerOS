@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.5.1.2"
+version = "1.5.1.3"
 
 
 import customtkinter as ctk
@@ -207,9 +207,9 @@ class newGUI(ctk.CTk):
 
         self.openSubprocesses = []
         self.currentTab = "initialising"
-        #1250x650 on 1920x1080
+        #1250x700 on 1920x1080
         self.width = ceil(self.winfo_screenwidth()/1920*1250)
-        self.height = ceil(self.winfo_screenheight()/1080*650)
+        self.height = ceil(self.winfo_screenheight()/1080*700)
         self.minsize(self.width,self.height)
         print(f"Allowing {self.width}x{self.height}")
         self.geometry(f"{self.width}x{self.height}+100+100") #+100+100 stops the gui from moving each time you open it
