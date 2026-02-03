@@ -59,7 +59,8 @@ downloads = { #category / [name to display,module location,font size]
         ["Equilazer APO","utility.eqapo",20],
         ["HandBrake","utility.handbrake",20],
         ["Lightshot","utility.lightshot",21],
-        ["ShareX","utility.sharex",22]
+        ["ShareX","utility.sharex",22],
+        ["JPEGView","utility.jpegview",22]
     ],
     "Customisation": [
         ["Rainmeter","utility.rainmeter",21],
@@ -68,7 +69,7 @@ downloads = { #category / [name to display,module location,font size]
     ],
     "Text Editors": [
         ["Visual Studio Code","utility.vscode",16],
-        ["Notepad++","utility.nppp",22],
+        #["Notepad++","utility.nppp",22],
         ["Sublime Text","utility.sublimetext",20],
         ["Atom","utility.atom",24]
     ],
@@ -116,7 +117,7 @@ class downloadsPage(ctk.CTkFrame):
             await asyncio.sleep(3)
             self.after(0,completeLabel.destroy)
             print(f"attempting to resummon {appFrame.application[1]}")
-            btn = ctk.CTkButton(appFrame, text="Download", width=round(appFrame.winfo_width()/4), font=ctk.CTkFont(size=16))
+            btn = ctk.CTkButton(appFrame, text="Download", width=round(w/4), font=ctk.CTkFont(size=16))
             btn.configure(command=lambda: self.download(btn,appFrame,appFrame.application[1]))
             self.master.master.shrink(btn,round(appFrame.winfo_width()/4),size=16)
             btn.grid(row=0,column=1,padx=(0,5),sticky="e")
