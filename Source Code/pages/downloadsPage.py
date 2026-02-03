@@ -164,10 +164,11 @@ class downloadsPage(ctk.CTkFrame):
     def __init__(self, master):
         print("initialising downloads")
         super().__init__(master=master.main_area, fg_color="transparent")
-        self.titleBar = ctk.CTkLabel(self, text="Downloads (downloads go to downloads folder)", font=ctk.CTkFont(size=32,weight="bold"), bg_color="#1d1a23", height=50)
-        master.shrink(self.titleBar,round(master.width/1250*1020),32)
-        self.titleBar.pack(side="top", fill="x", pady=(0,5))
         shrink = master.shrink
+        self.titleBar = ctk.CTkLabel(self, text="Downloads (downloads go to downloads folder)", font=ctk.CTkFont(size=32,weight="bold"), bg_color="#1d1a23", height=50)
+        shrink(self.titleBar,round(master.width/1250*1020),32)
+        self.titleBar.pack(side="top", fill="x", pady=(0,5))
+        
 
         self.scrollableDlFrame = ctk.CTkScrollableFrame(self, fg_color="#201d26")
         for category,applications in downloads.items():

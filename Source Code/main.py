@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.5.1.5"
+version = "1.5.2"
 
 
 import customtkinter as ctk
@@ -178,6 +178,9 @@ class newGUI(ctk.CTk):
         
         from logger.logger import ConsoleLogger
         self.logger = ConsoleLogger(master=self)
+        global settingsPage
+        from pages.settingsPage import settingsPage
+        settingsPage.setupSettings(settingsPage,self)
         from pages.sidebar import sidebar
         global homePage
         from pages.homePage import homePage
@@ -219,7 +222,8 @@ class newGUI(ctk.CTk):
             "downloads": None,
             "tweaks": None,
             "tools": None,
-            "about": None
+            "about": None,
+            "settings": None
         }
         self.homePage_init()
         self.cachedFrames["home"] = self.main_area.page
@@ -312,6 +316,20 @@ class newGUI(ctk.CTk):
             
             # show about page
             self.main_area.page = self.cachedFrames["about"]
+            self.main_area.page.grid(row=0,column=1,sticky="nsew")
+        
+    def settingsPage_init(self):
+        if self.currentTab != "settings":
+            self.currentTab = "settings"
+            # hide page
+            for child in self.main_area.winfo_children():
+                child.grid_forget()
+            
+            if self.cachedFrames["settings"] is None:
+                self.cachedFrames["settings"] = settingsPage(master=self)
+            
+            # show settings page
+            self.main_area.page = self.cachedFrames["settings"]
             self.main_area.page.grid(row=0,column=1,sticky="nsew")
     
 def on_close(gui):

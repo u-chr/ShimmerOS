@@ -27,12 +27,13 @@ def apply(self):
         async def pick(statusLabel):
             try:
                 EXE_PATH = Path(ctk.filedialog.askopenfilename(title="Select the AMD video Driver to debloat",filetypes=[("Executable files", "*.exe")]))
+                if str(EXE_PATH) == '.':
+                    self.AMDVDDtoplevel.attributes("-topmost", True)
+                    self.AMDVDDtoplevel.after(10,lambda: self.AMDVDDtoplevel.attributes("-topmost", False))
+                    return
                 CLEAN_DIR = EXE_PATH.parent / "SHIMMER_AMD_DEBLOAT"
                 if path.exists(CLEAN_DIR):
                     rmtree(CLEAN_DIR)
-                if not EXE_PATH:
-                    return
-                
                 instructionsLabel.configure(text="Select which components to remove:")
                 confframe = ctk.CTkFrame(self.AMDVDDtoplevel)
 
@@ -67,8 +68,7 @@ def apply(self):
                 amdfendr_cb.pack(side="top",padx=5,pady=5)
 
                 HDABus = ctk.StringVar(value="HDABus")
-                HDABus_cb = ctk.CTkCheckBox(confframe,text="HDABus\nMonitor HDMI Audio Support",variable=HDABus,onvalue=0,offvalue=1)
-                HDABus_cb.select()
+                HDABus_cb = ctk.CTkCheckBox(confframe,text="HDABus\nMonitor HDMI Audio Support",variable=HDABus,onvalue=0,offvalue="HDABus")
                 HDABus_cb.pack(side="top",padx=5,pady=5)
                 self.AMDVDDtoplevel.geometry("400x365")
                 confframe.pack(side="top",fill="both",expand=True)
@@ -114,40 +114,40 @@ def apply(self):
                         self.AMDVDDtoplevel.attributes("-topmost", True)
                         self.AMDVDDtoplevel.after(10,lambda: self.AMDVDDtoplevel.attributes("-topmost", False))
                         if INF:
-                            print("Debloat successful, installing driver")
-                            statusLabel.configure(text="Debloat successful!\nInstalling new driver...\n\nThis may take ~15 seconds")
-                            Dproc = Popen(["pnputil","/add-driver",path.join(CLEAN_DIR,INF),"/install"],creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,stdout=PIPE,stderr=PIPE,text=True,close_fds=True)
-                            Dproc.wait()
-                            if Dproc.returncode == 0:
-                                statusLabel.configure(text="Successfully completed!")
-                            else:
-                                Dproc.communicate()
-                                if Dproc.returncode == 5:
-                                    statusLabel.configure(text="Not admin")
-                                if Dproc.returncode == 259:
-                                    statusLabel.configure(text="Better driver already installed\nuninstall the old one first.")
+                            print("Debloat successful")
+                            statusLabel.configure(text="Debloat successful!")
+                            if self.AMDVDDtoplevel.master.settings["install_driver_on_complete"]:
+                                statusLabel.configure(text="Installing...")
+                                Dproc = Popen(["pnputil","/add-driver",path.join(CLEAN_DIR,INF),"/install"],creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,stdout=PIPE,stderr=PIPE,text=True,close_fds=True)
+                                Dproc.wait()
+                                if Dproc.returncode == 0:
+                                    statusLabel.configure(text="Successfully completed!")
                                 else:
-                                    statusLabel.configure(text=f"Failed with code {Dproc.returncode}")
-                            if HDABus.get():
-                                proc = Popen(["pnputil","/add-driver",DRIVER_DIR.parent.parent / "Audio" / "HDABus" / "WT64A","/install"],creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,stdout=PIPE,stderr=PIPE,text=True,close_fds=True)
-                                proc.wait()
-                                if proc.returncode == 0:
-                                    statusLabel.configure(text=statusLabel.cget("text") + "\nHDABus succesfully installed.")
-
-                                else:
-                                    proc.communicate()
-                                    if proc.returncode == 5:
-                                        statusLabel.configure(text=statusLabel.cget("text") + "\nHDABus installation failed: not admin")
-                                    if proc.returncode == 259:
-                                        statusLabel.configure(text=statusLabel.cget("text") + "\nHDABus already installed.")
+                                    Dproc.communicate()
+                                    if Dproc.returncode == 5:
+                                        statusLabel.configure(text="Not admin")
+                                    if Dproc.returncode == 259:
+                                        statusLabel.configure(text="Better driver already installed\nuninstall the old one first.")
                                     else:
-                                        statusLabel.configure(text=statusLabel.cget("text") + f"\nHDABus installation failed with code {proc.returncode}")
-                            if Dproc.returncode == 0:
+                                        statusLabel.configure(text=f"Failed with code {Dproc.returncode}")
                                 if HDABus.get():
+                                    print("installing hdabus")
+                                    proc = Popen(["pnputil","/add-driver",DRIVER_DIR.parent.parent / "Audio" / "HDABus" / "WT64A","/install"],creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,stdout=PIPE,stderr=PIPE,text=True,close_fds=True)
+                                    proc.wait()
                                     if proc.returncode == 0:
-                                        pass
-                                        #rmtree(CLEAN_DIR)
-                                        #remove(EXE_PATH)
+                                        statusLabel.configure(text=statusLabel.cget("text") + "\nHDABus succesfully installed.")
+
+                                    else:
+                                        proc.communicate()
+                                        if proc.returncode == 5:
+                                            statusLabel.configure(text=statusLabel.cget("text") + "\nHDABus installation failed: not admin")
+                                        if proc.returncode == 259:
+                                            statusLabel.configure(text=statusLabel.cget("text") + "\nHDABus already installed.")
+                                        else:
+                                            statusLabel.configure(text=statusLabel.cget("text") + f"\nHDABus installation failed with code {proc.returncode}")
+                            if self.AMDVDDtoplevel.master.settings["delete_driver_files_after_debloat"]:
+                                rmtree(CLEAN_DIR)
+                                remove(EXE_PATH)
                                         
                         else:
                             raise Exception("INF file not found")

@@ -1,6 +1,8 @@
 import customtkinter as ctk
 from webbrowser import open as openLink
-from os import path,getcwd,system,listdir,remove
+from os import path,getcwd,listdir,remove
+from subprocess import Popen,run
+from pathlib import Path
 from shutil import rmtree
 import threading
 import asyncio
@@ -27,15 +29,21 @@ def apply(self):
                 EXE_PATH = ctk.filedialog.askopenfilename(title="Select the NVIDIA Driver to debloat",filetypes=[("Executable files", "*.exe")])
                 if not EXE_PATH:
                     return
-                instructionsLabel.destroy()
-                btn.destroy()
-                command = f'"{path.join(getcwd()[:2],"/Program Files/","7-Zip/","7z.exe")}" x {EXE_PATH} -o{path.join(path.dirname(EXE_PATH),"SHIMMER_NVIDIA_DEBLOAT")} -y'
+                self.after(0,instructionsLabel.destroy)
+                self.after(0,btn.destroy)
                 statusLabel.configure(text="Extracting driver...")
                 self.NVDDtoplevel.attributes("-topmost", True)
                 self.NVDDtoplevel.after(10,lambda: self.NVDDtoplevel.attributes("-topmost", False))
-                system(command)
-                statusLabel.configure(text="Extracting complete\nDeleting unnecessary files...")
+                sevenzippath = Path(path.join(getcwd()[:2],"/Program Files/","7-Zip/","7z.exe"))
                 EXTRACTED_DIR = path.join(path.dirname(EXE_PATH),"SHIMMER_NVIDIA_DEBLOAT")
+                run([
+                    str(sevenzippath),
+                    "x",
+                    str(EXE_PATH),
+                    f"-o{EXTRACTED_DIR}",
+                    "-y"
+                ])
+                statusLabel.configure(text="Extracting complete\nDeleting unnecessary files...")
                 ignores = ["setup.cfg","setup.exe","Display.Driver","NVI2"]
                 for dir in listdir(EXTRACTED_DIR):
                     if not dir in ignores:
@@ -56,10 +64,14 @@ def apply(self):
                     filtered = [line for line in f.readlines() if ("ProgressPresentationUrl" not in line and "ProgressPresentationSelectedPackageUrl" not in line)]
                 with open(path.join(EXTRACTED_DIR,"NVI2","presentations.cfg"),'w', encoding='utf-8') as f:
                     f.writelines(filtered)
-                statusLabel.configure(text="Debloat completed successfully!\nFeel free to remove the SHIMMER_NVIDIA_DEBLOAT folder next to where you installed your driver to.")
-                SETUPEXE = path.join(EXTRACTED_DIR,"setup.exe")
-                print("Running " + str(SETUPEXE))
-                system(SETUPEXE)
+                statusLabel.configure(text="Debloat completed successfully!")
+                if self.NVDDtoplevel.master.settings["install_driver_on_complete"]:
+                    SETUPEXE = Path(EXTRACTED_DIR) / "setup.exe"
+                    print("Running " + str(SETUPEXE))
+                    Popen(SETUPEXE)
+                if self.NVDDtoplevel.master.settings["delete_driver_files_after_debloat"]:
+                    rmtree(EXTRACTED_DIR)
+                    remove(EXE_PATH)
             except Exception as e:
                 statusLabel.configure(text=f"Unexpected error occured: {e}")
         statusLabel = ctk.CTkLabel(self.NVDDtoplevel,text="",font=ctk.CTkFont(size=20),wraplength=380)

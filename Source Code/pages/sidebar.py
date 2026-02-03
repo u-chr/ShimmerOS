@@ -16,11 +16,27 @@ class sidebar(ctk.CTkFrame):
         )
         self.pack_propagate(False)
         self.icon.pack(side="top", anchor="n")
+
+        self.settings_icon = ctk.CTkButton(
+            self,
+            image=ctk.CTkImage(
+                dark_image=Image.open(resource_path("assets\\settings.png")),
+                size=(24, 24)
+            ),
+            text="",
+            width=24,
+            height=24,
+            fg_color="transparent",
+            hover_color="#27242d",
+            command=master.settingsPage_init)
+
+        self.settings_icon.place(x=0, y=0)
+
         
         #7 buttons take up 315 px
         #315 : 650 with 1920
         #315/650 of height dedicated to buttons
-        btnheight = round(master.height * (315/650)/7)
+        btnheight = round(master.height * (315/650)/8)
         print(f"sidebar buttons allowed {btnheight}px height")
 
         #create buttons
