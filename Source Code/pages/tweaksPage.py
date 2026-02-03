@@ -159,7 +159,7 @@ class tweaksPage(ctk.CTkFrame):
                     GPUReq = helpdata["gpu"]
             except Exception as e:
                 GPUReq = "none"
-            if not (GPUReq == "none" or GPUReq in cpumans):
+            if not (GPUReq == "none" or GPUReq in gpumans):
                 continue
 
             requirementNotMet = False
