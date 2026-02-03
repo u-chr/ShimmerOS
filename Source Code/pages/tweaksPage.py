@@ -9,6 +9,8 @@ import json
 import wmi
 global gpumans
 global cpumans
+gpumans = []
+cpumans = []
 import pythoncom
 def getMans():
     pythoncom.CoInitialize()
@@ -64,11 +66,8 @@ class tweaksPage(ctk.CTkFrame):
         helpLabel.pack(side="top",fill="x")
         helpTL.attributes("-topmost", True)
         helpTL.after(10,lambda: helpTL.attributes("-topmost", False))
-    def __init__(self, master):
-        super().__init__(master=master.main_area, fg_color="transparent")
-        self.titleBar = ctk.CTkLabel(self, text="Tweaks", font=ctk.CTkFont(size=32,weight="bold"), bg_color="#1d1a23", height=50)
-        self.titleBar.pack(side="top", fill="x")
-
+    def loaded(self,master):
+        
         #create scrollable sidebar frame to display all the dirs
         warningFrame = ctk.CTkFrame(self, fg_color="#232029")
         warningLabel1 = ctk.CTkLabel(warningFrame,text="⚠️ WARNING ⚠️",font=ctk.CTkFont(size=32))
@@ -205,6 +204,26 @@ class tweaksPage(ctk.CTkFrame):
             if c > 1:
                 c = 0
                 r += 1
+    def __init__(self, master):
+        super().__init__(master=master.main_area, fg_color="transparent")
+        self.titleBar = ctk.CTkLabel(self, text="Tweaks", font=ctk.CTkFont(size=32,weight="bold"), bg_color="#1d1a23", height=50)
+        self.titleBar.pack(side="top", fill="x")
+        if not (gpumans or cpumans):
+            self.tlabel = ctk.CTkLabel(self,text="Loading hardware information...",font=ctk.CTkFont(size=32))
+            self.tlabel.pack(side="top",pady=20)
+        else:
+            self.tlabel = None
+        def check_loaded():
+            if gpumans and cpumans and gpumans[0] is not None and cpumans[0] is not None:
+                if self.tlabel != None:
+                    self.tlabel.destroy()
+                self.after(0, lambda: self.loaded(master))
+            else:
+                self.after(50, check_loaded)
+
+        
+        
+        check_loaded()
 
     def colourlabel(self,proc,label,colour):
         proc.wait()
