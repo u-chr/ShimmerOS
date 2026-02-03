@@ -3,3 +3,4 @@ Source\ Code/dist/
 __pycache__/
 *.spec
 Source\ Code/quickaccess/
+.vscode/
