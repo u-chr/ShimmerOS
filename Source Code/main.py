@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-version = "1.5.2.2"
+version = "1.5.2.3"
 
-
+from functools import cache
 import customtkinter as ctk
 ctk.set_appearance_mode("dark")
 from hashlib import sha256
@@ -18,13 +18,9 @@ SHIMMERP = join(drive,"/Shimmer/")
 SOFTWAREP = join(SHIMMERP,"Software")
 QA_P = join(SOFTWAREP,"quickaccess")
 TWEAKSP = join(SOFTWAREP,"Tweaks")
-if not exists(SHIMMERP):
-    mkdir(SHIMMERP)
-if not exists(SOFTWAREP):
-    mkdir(SOFTWAREP)
-if not exists(QA_P):
-    mkdir(QA_P)
-
+for path in [SHIMMERP, SOFTWAREP, QA_P]:
+    if not exists(path):
+        mkdir(path)
 createTweaks = False
 if exists(TWEAKSP):
     createTweaks = True
@@ -155,6 +151,7 @@ class newGUI(ctk.CTk):
         self.basepath = TWEAKSP
         self.dirs = sorted([d for d in listdir(self.basepath) if isdir(join(self.basepath,d))],key=str.casefold)
 
+    @cache
     def shrink(self, widget, width, size):
         text = max(widget.cget("text").splitlines(),key=len) + "." #add a tiny bit of extra length
         
@@ -184,16 +181,6 @@ class newGUI(ctk.CTk):
         from pages.sidebar import sidebar
         global homePage
         from pages.homePage import homePage
-        global downloadsPage
-        from pages.downloadsPage import downloadsPage
-        global tweaksPage
-        from pages.tweaksPage import tweaksPage
-        global toolsPage
-        from pages.toolsPage import toolsPage
-        global quickaccessPage
-        from pages.quickaccessPage import quickaccessPage
-        global aboutPage
-        from pages.aboutPage import aboutPage
         print("hello log viewer")
         self.CurrentVersion = version
         self.dirs = "loading"
@@ -256,6 +243,7 @@ class newGUI(ctk.CTk):
 
     def downloadsPage_init(self):
         if self.currentTab != "downloads":
+            from pages.downloadsPage import downloadsPage
             self.currentTab = "downloads"
             # hide page
             for child in self.main_area.winfo_children():
@@ -270,6 +258,7 @@ class newGUI(ctk.CTk):
     
     def tweaksPage_init(self):
         if self.currentTab != "tweaks":
+            from pages.tweaksPage import tweaksPage
             self.currentTab = "tweaks"
 
             # hide page
@@ -285,6 +274,7 @@ class newGUI(ctk.CTk):
     
     def toolsPage_init(self):
         if self.currentTab != "tools":
+            from pages.toolsPage import toolsPage
             self.currentTab = "tools"
             # hide page
             for child in self.main_area.winfo_children():
@@ -299,6 +289,7 @@ class newGUI(ctk.CTk):
      
     def quickaccessPage_init(self):
         if self.currentTab != "quickaccess":
+            from pages.quickaccessPage import quickaccessPage
             self.currentTab = "quickaccess"
             # hide page
             for child in self.main_area.winfo_children():
@@ -310,6 +301,7 @@ class newGUI(ctk.CTk):
 
     def aboutPage_init(self):
         if self.currentTab != "about":
+            from pages.aboutPage import aboutPage
             self.currentTab = "about"
             # hide page
             for child in self.main_area.winfo_children():

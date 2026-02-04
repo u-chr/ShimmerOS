@@ -21,16 +21,12 @@ downloads = { #category / [name to display,module location,font size]
         ["Vivaldi","chromium.vivaldi",22],
         ["Ungoogled\nChromium","chromium.ungoogled",14],
         ["⭐ Helium","chromium.helium",22],
-        ["SRWare Iron","chromium.swiron",20],
-        ["Comodo Dragon","chromium.comododragon",18],
         ["Epic Privacy\nBrowser","chromium.epic",14],
-        ["Opera GX","chromium.operagx",20],
-        ["Opera","chromium.opera",22],
         ["Yandex","chromium.yandex",22],
         ["Arc","chromium.arc",24]
     ],
     "Gaming": [
-        ["Legcord","utility.legcord",22],
+        ["⭐ Legcord","utility.legcord",22],
         ["Discord","utility.discord",22],
         ["Vencord","utility.vencord",22],
         ["Steam","utility.steam",24],
@@ -41,7 +37,8 @@ downloads = { #category / [name to display,module location,font size]
         ["MegaHack v9","utility.mhv9",20],
         ["MegaHack v8","utility.mhv8",20],
         ["MegaHack v7","utility.mhv7",20],
-        ["Geode","utility.geode",22]
+        ["Geode","utility.geode",22],
+        ["Xbox App","utility.xbox",20]
     ],
     "Utilities": [
         ["Mullvad VPN","utility.mullvadvpn",20],
@@ -49,19 +46,19 @@ downloads = { #category / [name to display,module location,font size]
         ["Bleachbit","utility.bleachbit",21],
         ["qBittorrent","utility.qbt",20],
         ["Free Download\nManager","utility.fdm",18],
-        ["CapFrameX","utility.cfx",20]
+        ["⭐ CapFrameX","utility.cfx",20]
     ],
     "Media": [
         ["VLC","utility.vlc",24],
-        ["OBS Studio","utility.obs",20],
+        ["⭐ OBS Studio","utility.obs",20],
         ["Medal","utility.medal",22],
         ["SoundSwitch","utility.soundswitch",20],
         ["Voicemeeter Banana","utility.vmbanana",20],
         ["Equilazer APO","utility.eqapo",20],
         ["HandBrake","utility.handbrake",20],
-        ["Lightshot","utility.lightshot",21],
+        ["⭐ Lightshot","utility.lightshot",21],
         ["ShareX","utility.sharex",22],
-        ["JPEGView","utility.jpegview",22]
+        ["⭐ JPEGView","utility.jpegview",22]
     ],
     "Customisation": [
         ["Rainmeter","utility.rainmeter",21],
@@ -70,6 +67,7 @@ downloads = { #category / [name to display,module location,font size]
     ],
     "Text Editors": [
         ["Visual Studio Code","utility.vscode",16],
+        ["⭐ Neovim","utility.neovim",20],
         #["Notepad++","utility.nppp",22],
         ["Sublime Text","utility.sublimetext",20],
         ["Atom","utility.atom",24]
@@ -80,7 +78,7 @@ downloads = { #category / [name to display,module location,font size]
         ["ASRock Timing\nConfigurator","utility.asrocktc",14],
         ["Custom Resolution\nUtility","utility.cru",14],
         ["MoreClockTool","utility.mct",19],
-        ["Display Driver\nUninstaller","utility.ddu",14],
+        ["⭐ Display Driver\nUninstaller","utility.ddu",14],
         ["Radeon Software\nSlimmer","utility.rsslimmer",14],
         ["NVCleanStall","utility.nvcs",20],
         ["CrystalDiskInfo","utility.cdinfo",20],
@@ -88,11 +86,11 @@ downloads = { #category / [name to display,module location,font size]
     ],
     "System Tools": [
         ["Process Lasso","utility.processlasso",19],
-        ["Revo Uninstaller","utility.revouninstaller",17],
+        ["⭐ Revo Uninstaller","utility.revouninstaller",17],
         ["WinRAR","utility.winrar",22],
         ["Powershell 7","utility.powershell",20],
         ["Teracopy","utility.teracopy",22],
-        ["Everything Search","utility.everything",18],
+        ["⭐ Everything Search","utility.everything",18],
         ["WizTree","utility.wiztree",22],
         ["AutoHotkey v2.0","utility.ahk2",20],
         ["AutoHotkey v1.1","utility.ahk1",20]
@@ -140,7 +138,7 @@ class downloadsPage(ctk.CTkFrame):
                 f.write(chunk)
                 if total:
                     frac = downloaded/total
-                    if frac-lastUpdateFrac >= 0.01 and frac <= 1: #only update ui every 1% downloaded
+                    if frac-lastUpdateFrac >= 0.01 and frac <= 2: #only update ui every 2% downloaded
                         threading.Thread(target=lambda: self.after(0,progressbar.set,frac), daemon=True).start()
                         lastUpdateFrac = frac
             try:
