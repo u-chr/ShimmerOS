@@ -1,9 +1,10 @@
 downloads = { #category / [name to display,module location,font size]
-    "Shimmer quick access": [
+    ("Shimmer quick access"): [
+        ["$xAuto Gpu Affinity","quickaccess.aga",14], #$x means that getURL is a procedure, not a function
         ["Autoruns","quickaccess.autoruns",20],
         ["GoInterruptPolicy","quickaccess.goip",15],
-        ["$xNSudo","quickaccess.nsudo",22], #$x means that getURL is a procedure, not a function
-        ["$xAuto Gpu Affinity","quickaccess.aga",14]
+        ["$xNSudo","quickaccess.nsudo",22]
+        
     ],
     "Firefox based browsers": [
         ["⭐ Tor","firefox.tor",24],

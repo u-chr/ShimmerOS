@@ -1,8 +1,9 @@
 import customtkinter as ctk
-from os.path import join,abspath,exists,isdir
+from os.path import join,abspath,exists
 from os import listdir,getcwd
 SOFTWARE_DIR = join(getcwd()[2:],"/Shimmer","Software")
-from subprocess import Popen,check_output
+from subprocess import Popen
+from pages.checklist import ChecklistTL
 from time import sleep
 import threading
 import json
@@ -205,9 +206,10 @@ class tweaksPage(ctk.CTkFrame):
                 c = 0
                 r += 1
     def __init__(self, master):
+
         super().__init__(master=master.main_area, fg_color="transparent")
-        self.titleBar = ctk.CTkLabel(self, text="Tweaks", font=ctk.CTkFont(size=32,weight="bold"), bg_color="#1d1a23", height=50)
-        self.titleBar.pack(side="top", fill="x")
+        self.titleBar = ctk.CTkLabel(self, text="Tweaks (right click a tweak for info)", font=ctk.CTkFont(size=32,weight="bold"), height=50)
+        self.titleBar.pack(fill="x")
         if not (gpumans or cpumans):
             self.tlabel = ctk.CTkLabel(self,text="Loading hardware information...",font=ctk.CTkFont(size=32))
             self.tlabel.pack(side="top",pady=20)

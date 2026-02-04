@@ -5,7 +5,8 @@ SOFTWARE_DIR = join(getcwd()[2:],"/Shimmer","Software")
 SETTINGS_DIR = join(SOFTWARE_DIR,"settings.json")
 import customtkinter as ctk
 available = ["install_driver_on_complete",
-             "delete_driver_files_after_debloat"]
+             "delete_driver_files_after_debloat",
+             "peak_os_mode"]
 def verifysettings(settings):
     e = 0
     for option in available:
@@ -24,7 +25,8 @@ class settingsPage(ctk.CTkFrame):
             open(SETTINGS_DIR,'x').close
             self.gui.settings = {
                 "install_driver_on_complete": 1,
-                "delete_driver_files_after_debloat": 1
+                "delete_driver_files_after_debloat": 1,
+                "peak_os_mode": 0
             }
             with open(SETTINGS_DIR,'w') as f:
                 json.dump(self.gui.settings,f,indent=4)
@@ -58,12 +60,21 @@ class settingsPage(ctk.CTkFrame):
                                        variable=self.install_driver_on_complete,)
         idocCheckbox.pack()
 
+
         self.delete_driver_files_after_debloat = ctk.IntVar(value=self.gui.settings["delete_driver_files_after_debloat"])
         ddfadCheckbox = ctk.CTkCheckBox(self,text="Delete driver files after auto-install",
                                        variable=self.delete_driver_files_after_debloat,
                                        command=lambda: self.updateSettings(self.delete_driver_files_after_debloat,
                                        match=["delete_driver_files_after_debloat"]))
         ddfadCheckbox.pack()
+
+
+        self.peak_os_mode = ctk.IntVar(value=self.gui.settings["peak_os_mode"])
+        pomCheckbox = ctk.CTkCheckBox(self,text="Change 'Shimmer' to 'Peak' in software (for the funsies)",
+                                       variable=self.peak_os_mode,
+                                       command=lambda: self.updateSettings(self.peak_os_mode,
+                                       match=["peak_os_mode"]))
+        pomCheckbox.pack()
 
 
         idocCheckbox.configure(command=lambda: self.updateSettings(
@@ -73,3 +84,6 @@ class settingsPage(ctk.CTkFrame):
         ddfadCheckbox.configure(command=lambda: self.updateSettings(
                                     self.delete_driver_files_after_debloat,
                                     match=[["delete_driver_files_after_debloat",2,ddfadCheckbox]]))
+        pomCheckbox.configure(command=lambda: self.updateSettings(
+                                    self.peak_os_mode,
+                                    match=[["peak_os_mode",2,pomCheckbox]]))

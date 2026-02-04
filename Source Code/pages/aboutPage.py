@@ -48,11 +48,11 @@ class aboutPage(ctk.CTkFrame):
         self.creditsTitle = ctk.CTkLabel(self, text="Credits", font=ctk.CTkFont(size=28))
         self.creditsTitle.pack(side="top", pady=(15,4))
 
-        self.creditsLabel1 = ctk.CTkLabel(self, text="Hickensa (SapphireOS/Tool) for being the main inspiration for uchr's development of Shimmer OS, and my development of this tool.", font=ctk.CTkFont(size=16), cursor="hand2",wraplength=sf*1020)
+        self.creditsLabel1 = ctk.CTkLabel(self, text="Hickensa (SapphireOS/Tool) for being the main inspiration for uchr's development of " + ("Peak" if self.master.master.settings["peak_os_mode"] else "Shimmer") + " OS, and my development of this tool.", font=ctk.CTkFont(size=16), cursor="hand2",wraplength=sf*1020)
         self.creditsLabel1.bind("<Button-1>", lambda e: openLink("https://github.com/HickerDicker"))
         self.creditsLabel1.pack(side="top", pady=(8,0))
 
-        self.creditsLabel2 = ctk.CTkLabel(self, text="Chr for making Shimmer OS!", font=ctk.CTkFont(size=16), cursor="hand2")
+        self.creditsLabel2 = ctk.CTkLabel(self, text="Chr for making " + ("Peak" if self.master.master.settings["peak_os_mode"] else "Shimmer") + " OS!", font=ctk.CTkFont(size=16), cursor="hand2")
         self.creditsLabel2.bind("<Button-1>", lambda e: openLink("https://github.com/u2chr2"))
         self.creditsLabel2.pack(side="top", pady=(2,0))
 

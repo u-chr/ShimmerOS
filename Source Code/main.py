@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.5.2.1"
+version = "1.5.2.2"
 
 
 import customtkinter as ctk
@@ -201,8 +201,6 @@ class newGUI(ctk.CTk):
         print(f"Running from drive {self.drive}")
         if createTweaks:
             threading.Thread(target=self.loadTweaks, daemon=True).start()
-
-
         super().__init__(fg_color="#201d26")
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=0)  # sidebar (fixed)
@@ -216,7 +214,13 @@ class newGUI(ctk.CTk):
         self.minsize(self.width,self.height)
         print(f"Allowing {self.width}x{self.height}")
         self.geometry(f"{self.width}x{self.height}+100+100") #+100+100 stops the gui from moving each time you open it
-        self.title("Shimmer")
+        try:
+            if self.settings["peak_os_mode"]:
+                self.title("Peak")
+            else:
+                self.title("Shimmer")
+        except Exception:
+            self.title("Shimmer")
         self.cachedFrames = {
             "home": None,
             "downloads": None,
