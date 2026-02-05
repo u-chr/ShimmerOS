@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.5.2.5"
+version = "1.5.2.6"
 
 from functools import cache
 import customtkinter as ctk
@@ -13,6 +13,9 @@ from subprocess import Popen, DETACHED_PROCESS, CREATE_NEW_PROCESS_GROUP
 from os import listdir,getcwd,mkdir
 from os.path import isdir,join,exists
 from math import ceil
+import ctypes
+from sys import exit
+
 drive = getcwd()[:2]
 SHIMMERP = join(drive,"/Shimmer/")
 SOFTWAREP = join(SHIMMERP,"Software")
@@ -104,7 +107,8 @@ class newGUI(ctk.CTk):
         log("Outdated Shimmer, updating...")
         log("Checking if auto updater is installed...")
         
-        UPD_PATH = join(SOFTWAREP,"ShimmerUpdater.exe")
+        UPD_DIR = join(SOFTWAREP,"Updater")
+        UPD_PATH = join(UPD_DIR,"ShimmerUpdater.exe")
 
         installed = False
         while not installed:
@@ -134,6 +138,7 @@ class newGUI(ctk.CTk):
                 else:
                     log("Auto updater not corrupted and up to date, proceeding...")
                     break
+            break
             if install:
                 async with aiohttp.ClientSession() as session:
                     async with session.get("https://github.com/loplxl/ShimmerUpdater/releases/latest/download/ShimmerUpdater.exe") as resp:
@@ -144,8 +149,12 @@ class newGUI(ctk.CTk):
             
             await asyncio.sleep(1) #wait 1s before loop to ensure everything is normal
         log("Auto updater is up to date")
-        Popen(UPD_PATH.split(" "),creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,close_fds=True)
-        on_close(self)
+        for process in gui.openSubprocesses:
+            log(f"Terminating {process}")
+            process.terminate()
+        gui.destroy()
+        ctypes.windll.shell32.ShellExecuteW(None,"open","cmd.exe",f'/k "{UPD_PATH}"',UPD_DIR,1)
+        exit(0)
 
     def loadTweaks(self):
         self.basepath = TWEAKSP
