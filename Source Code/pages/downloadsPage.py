@@ -82,7 +82,8 @@ downloads = { #category / [name to display,module location,font size]
         ["Radeon Software\nSlimmer","utility.rsslimmer",14],
         ["NVCleanStall","utility.nvcs",20],
         ["CrystalDiskInfo","utility.cdinfo",20],
-        ["GUI SCEWIN","utility.guiscewin",20]
+        ["GUI SCEWIN","utility.guiscewin",20],
+        ["RawAccel","utility.rawaccel",20]
     ],
     "System Tools": [
         ["Process Lasso","utility.processlasso",19],
