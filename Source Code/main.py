@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.5.2.3"
+version = "1.5.2.4"
 
 from functools import cache
 import customtkinter as ctk
@@ -161,6 +161,8 @@ class newGUI(ctk.CTk):
         best = low
         while low <= high:
             mid = (low + high) // 2
+            #if debug:
+            #    print(f"Testing: {mid}")
             font = ctk.CTkFont(size=mid)
             if font.measure(text) <= width:
                 best = mid

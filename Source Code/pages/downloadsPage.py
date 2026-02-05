@@ -49,7 +49,7 @@ downloads = { #category / [name to display,module location,font size]
         ["⭐ CapFrameX","utility.cfx",20]
     ],
     "Media": [
-        ["VLC","utility.vlc",24],
+        ["⭐ VLC","utility.vlc",24],
         ["⭐ OBS Studio","utility.obs",20],
         ["Medal","utility.medal",22],
         ["SoundSwitch","utility.soundswitch",20],

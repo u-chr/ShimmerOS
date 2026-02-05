@@ -170,7 +170,7 @@ class tweaksPage(ctk.CTkFrame):
             localFrame.nameLabel = ctk.CTkLabel(localFrame, text=directory.replace("_"," "), font=ctk.CTkFont(size=24))
             localFrame.nameLabel.pack(side="left", padx=[10,0], pady=10)
             if requirementNotMet: 
-                localFrame.nameLabel.configure(text=f"not met requirement for {directory.replace("_"," ")}: {requirement} download it in downloads page, then reopen app", font=ctk.CTkFont(size=20))
+                localFrame.nameLabel.configure(text=f"Error: {directory.replace("_"," ")} depends on {requirement}", font=ctk.CTkFont(size=30))
             else:
                 if "on.bat" in files and "off.bat" in files:
                     localFrame.switchvar = ctk.StringVar()
@@ -198,9 +198,9 @@ class tweaksPage(ctk.CTkFrame):
             localFrame.grid(row=r, column=c, sticky="nsew", padx=3, pady=6)
             self.dirbar.grid_columnconfigure(c, weight=1)
             if not requirementNotMet:
-                master.shrink(localFrame.nameLabel, round((master.width/1250*1030-141)/2) - 116, 30)
+                master.shrink(localFrame.nameLabel, max(1,round((master.width/1250*1030-141)/2) - 116), 30)
             else:
-                master.shrink(localFrame.nameLabel, round((master.width/1250*1030)/2), 30)
+                master.shrink(localFrame.nameLabel, max(1,round((master.width/1250*1030)/2)-75), 30)
             c += 1
             if c > 1:
                 c = 0
