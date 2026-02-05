@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.5.2.6"
+version = "1.5.2.7"
 
 from functools import cache
 import customtkinter as ctk
@@ -138,7 +138,6 @@ class newGUI(ctk.CTk):
                 else:
                     log("Auto updater not corrupted and up to date, proceeding...")
                     break
-            break
             if install:
                 async with aiohttp.ClientSession() as session:
                     async with session.get("https://github.com/loplxl/ShimmerUpdater/releases/latest/download/ShimmerUpdater.exe") as resp:
