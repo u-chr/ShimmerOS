@@ -37,7 +37,7 @@ class toolsPage(ctk.CTkFrame):
                         Label.pack(side="top")
                         Description = ctk.CTkLabel(Frame, text=helpdata["description"],bg_color="transparent", justify="center")
                         Description.pack(side="top", pady=(5,10))
-                        master.shrink(Description,w,helpdata["descriptionsize"])
+                        master.shrink(Description,w-10,helpdata["descriptionsize"])
                         BtnContainer = ctk.CTkFrame(Frame, fg_color="transparent", bg_color="transparent")
                         ApplyBtn = ctk.CTkButton(BtnContainer, text="Apply", font=ctk.CTkFont(size=16), fg_color="#00aa00", hover_color="#006600", width=round(w/4), command=lambda helpdata=helpdata: self.apply(self.master.master,helpdata["toolname"]))
                         ApplyBtn.grid(row=0, column=0, padx=round(w/9), pady=10)

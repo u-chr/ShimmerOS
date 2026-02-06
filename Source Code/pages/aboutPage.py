@@ -56,5 +56,8 @@ class aboutPage(ctk.CTkFrame):
         self.creditsLabel2.bind("<Button-1>", lambda e: openLink("https://github.com/u2chr2"))
         self.creditsLabel2.pack(side="top", pady=(2,0))
 
+        self.creditsLabel2 = ctk.CTkLabel(self, text="Dexy for making some epic wallpapers!", font=ctk.CTkFont(size=16))
+        self.creditsLabel2.pack(side="top", pady=(2,0))
+
         self.versionLabel = ctk.CTkLabel(self, text=f"Version: {self.master.master.CurrentVersion}", font=ctk.CTkFont(size=16))
         self.versionLabel.pack(side="bottom", pady=(2,10))

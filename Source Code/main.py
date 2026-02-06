@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.5.2.7"
+version = "1.6"
 
 from functools import cache
 import customtkinter as ctk
@@ -9,7 +9,6 @@ import threading
 import aiohttp
 import asyncio
 from datetime import datetime
-from subprocess import Popen, DETACHED_PROCESS, CREATE_NEW_PROCESS_GROUP
 from os import listdir,getcwd,mkdir
 from os.path import isdir,join,exists
 from math import ceil
@@ -180,6 +179,7 @@ class newGUI(ctk.CTk):
 
             s = best
         widget.configure(font=ctk.CTkFont(size=s))
+        return s
 
     def __init__(self):
         
@@ -205,9 +205,9 @@ class newGUI(ctk.CTk):
 
         self.openSubprocesses = []
         self.currentTab = "initialising"
-        #1250x700 on 1920x1080
+        #1250x735 on 1920x1080
         self.width = ceil(self.winfo_screenwidth()/1920*1250)
-        self.height = ceil(self.winfo_screenheight()/1080*700)
+        self.height = ceil(self.winfo_screenheight()/1080*735)
         self.minsize(self.width,self.height)
         print(f"Allowing {self.width}x{self.height}")
         self.geometry(f"{self.width}x{self.height}+100+100") #+100+100 stops the gui from moving each time you open it
@@ -223,6 +223,7 @@ class newGUI(ctk.CTk):
             "downloads": None,
             "tweaks": None,
             "tools": None,
+            "customize": None,
             "about": None,
             "settings": None
         }
@@ -307,6 +308,21 @@ class newGUI(ctk.CTk):
 
             # show quickaccess page
             self.main_area.page = quickaccessPage(master=self)
+            self.main_area.page.grid(row=0,column=1,sticky="nsew")
+
+    def customizePage_init(self):
+        if self.currentTab != "customize":
+            from pages.customizePage import customizePage
+            self.currentTab = "customize"
+            # hide page
+            for child in self.main_area.winfo_children():
+                child.grid_forget()
+            
+            if self.cachedFrames["customize"] is None:
+                self.cachedFrames["customize"] = customizePage(master=self)
+            
+            # show customize page
+            self.main_area.page = self.cachedFrames["customize"]
             self.main_area.page.grid(row=0,column=1,sticky="nsew")
 
     def aboutPage_init(self):

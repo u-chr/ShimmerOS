@@ -44,18 +44,14 @@ class sidebar(ctk.CTkFrame):
         downloadsButton = ctk.CTkButton(self, text="Downloads", command=master.downloadsPage_init, fg_color="#1f1c25", hover_color="#23202b", font=ctk.CTkFont(size=24),height=btnheight)
         toolsButton = ctk.CTkButton(self, text="Tools", command=master.toolsPage_init, fg_color="#1f1c25", hover_color="#23202b", font=ctk.CTkFont(size=24),height=btnheight)
         quickaccessButton = ctk.CTkButton(self, text="Quick Access", command=master.quickaccessPage_init, fg_color="#1f1c25", hover_color="#23202b", font=ctk.CTkFont(size=24),height=btnheight)
+        customizeButton = ctk.CTkButton(self, text="Customize", command=master.customizePage_init, fg_color="#1f1c25", hover_color="#23202b", font=ctk.CTkFont(size=24),height=btnheight)
         aboutButton = ctk.CTkButton(self, text="About", command=master.aboutPage_init, fg_color="#1f1c25", hover_color="#23202b", font=ctk.CTkFont(size=24),height=btnheight)
         
         logsButton = ctk.CTkButton(self, text="View current logs", command=lambda: threading.Thread(target=asyncio.run(master.showlogs()),daemon=True).start(), fg_color="#1f1c25", hover_color="#23202b", font=ctk.CTkFont(size=20),height=btnheight)
         updateButton = ctk.CTkButton(self, text="Check for updates", command=lambda: threading.Thread(target=asyncio.run(master.AutoUpdater()),daemon=True).start(), fg_color="#1f1c25", hover_color="#23202b", font=ctk.CTkFont(size=20),height=btnheight)
         
-        master.shrink(homeButton,width-20,24)
-        master.shrink(downloadsButton,width-20,24)
-        master.shrink(toolsButton,width-20,24)
-        master.shrink(quickaccessButton,width-20,24)
-        master.shrink(aboutButton,width-20,24)
-        master.shrink(logsButton,width-20,24)
-        master.shrink(updateButton,width-20,24)
+        for btn in [homeButton,downloadsButton,toolsButton,quickaccessButton,customizeButton,aboutButton,logsButton,updateButton]:
+            master.shrink(btn,width-10,24)
         
         homeButton.pack(side="top", anchor="n", padx=5, pady=3, fill='x')
         downloadsButton.pack(side="top", anchor="n", padx=5, pady=3, fill='x')
@@ -65,6 +61,7 @@ class sidebar(ctk.CTkFrame):
             tweaksButton.pack(side="top", anchor="n", padx=5, pady=3, fill='x')
         toolsButton.pack(side="top", anchor="n", padx=5, pady=3, fill='x')
         quickaccessButton.pack(side="top", anchor="n", padx=5, pady=3, fill='x')
+        customizeButton.pack(side="top", anchor="n", padx=5, pady=3, fill='x')
         aboutButton.pack(side="top", anchor="n", padx=5, pady=3, fill='x')
         updateButton.pack(side="bottom", anchor="s", padx=5, pady=3, fill='x')
         logsButton.pack(side="bottom", anchor="s", padx=5, pady=(3,6), fill='x')
