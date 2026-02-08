@@ -15,7 +15,8 @@ def userstopatr(stress,label,bestlabel,NtSetTimerResolution):
     NtSetTimerResolution(0, False, ctypes.wintypes.ULONG()) #disable temporary timer res
     Popen([r"C:\Users\lop\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\SetTimerResolution.exe.lnk"],shell=True)
 def stopatr(stress,label,bestlabel,NtSetTimerResolution):
-    stress.terminate()
+    if stress != None:
+        stress.terminate()
     label.configure(text="Done, trying to apply...")
     saveTRESShortcut(bestres)
     label.configure(text=(f"Successfully applied {bestres}!" if exists(shortcut_location) else f"Failed, manually apply {bestres}. Guide in Discord."))
@@ -70,7 +71,8 @@ def handleNtSetTimerResolution(minres,maxres,samples,label,stress):
             if label.master.winfo_exists():
                 bestlabel.configure(text=f"Best: {bestres} {bestdelta}" if bestres!=-1 else "")
             else:
-                stress.terminate()
+                if stress != None:
+                    stress.terminate()
                 raise Exception("user stopped timer res")
             benchmark(res,samples,label)
         for k,v in results.items():
@@ -87,7 +89,8 @@ def handleNtSetTimerResolution(minres,maxres,samples,label,stress):
         stopatr(stress,label,bestlabel,NtSetTimerResolution)
     except Exception as e:
         print(f"error during timer res\n{str(e)}")
-        stress.terminate()
+        if stress != None:
+            stress.terminate()
 
 
 
@@ -135,7 +138,7 @@ def apply(self):
     if createnewtl:
         self.ATRtoplevel = ctk.CTkToplevel(self, fg_color="#201d26")
         self.ATRtoplevel.protocol("WM_DELETE_WINDOW", lambda: on_close(self))
-        self.ATRtoplevel.geometry("500x200")
+        self.ATRtoplevel.geometry("600x200")
         self.ATRtoplevel.title("Apply Timer Resolution")
 
         #create a frame to hold entries, then pack the frame and submit button
@@ -147,7 +150,7 @@ def apply(self):
         self.varsFrame = ctk.CTkFrame(self.ATRtoplevel, fg_color="#201d26")
 
 
-        minresFrame = ctk.CTkFrame(self.varsFrame, fg_color="transparent", width=120)
+        minresFrame = ctk.CTkFrame(self.varsFrame, fg_color="transparent", width=115)
         minresLabel = ctk.CTkLabel(minresFrame, text="Minimum Resolution")
         minresEntry = ctk.CTkEntry(minresFrame, textvariable=minres, justify="center")
 
@@ -156,7 +159,7 @@ def apply(self):
         minresFrame.grid(row=0,column=0)
 
         
-        maxresFrame = ctk.CTkFrame(self.varsFrame, fg_color="transparent", width=120)
+        maxresFrame = ctk.CTkFrame(self.varsFrame, fg_color="transparent", width=115)
         maxresLabel = ctk.CTkLabel(maxresFrame, text="Maximum Resolution")
         maxresEntry = ctk.CTkEntry(maxresFrame, textvariable=maxres, justify="center")
 
@@ -165,7 +168,7 @@ def apply(self):
         maxresFrame.grid(row=0,column=1)
 
 
-        samplesFrame = ctk.CTkFrame(self.varsFrame, fg_color="transparent", width=120)
+        samplesFrame = ctk.CTkFrame(self.varsFrame, fg_color="transparent", width=115)
         samplesLabel = ctk.CTkLabel(samplesFrame, text="Samples")
         samplesEntry = ctk.CTkEntry(samplesFrame, textvariable=samples, justify="center")
 
@@ -173,8 +176,13 @@ def apply(self):
         samplesEntry.pack()
         samplesFrame.grid(row=0,column=2)
 
-        
-        for i in range(3):
+
+        self.atrstressCheckbox = ctk.CTkCheckBox(self.varsFrame,text="Stress Test")
+        self.atrstressCheckbox.select()
+        self.atrstressCheckbox.grid(row=0,column=3)
+
+
+        for i in range(4):
             self.varsFrame.grid_columnconfigure(i, weight=1, uniform="col")
         self.varsFrame.pack(side="top", pady=(10,0), fill="x")
 
@@ -198,14 +206,18 @@ TRES_DIR = r"TimerResolution"
 
 
 def confirm(minres,maxres,samples,btn,label):
-    with Popen(resource_path("TimerResolution\\stress").split(" "),creationflags=CREATE_NO_WINDOW) as stresstest:
-        label.master.master.openSubprocesses.append(stresstest)
-        label.configure(text="Loading...")
-        beforetime = time()
-        while time() - beforetime < 1: #wait 1s for stress test
-            pass
-        
-        threading.Thread(target=handleNtSetTimerResolution,args=(int(minres.get()),int(maxres.get()),samples.get(),label,stresstest), daemon=True).start()
+    if label.master.master.atrstressCheckbox.get():
+        label.after(0,label.master.master.atrstressCheckbox.destroy)
+        label.master.master.varsFrame.grid_columnconfigure(4,weight=0)
+        with Popen(resource_path("TimerResolution\\stress").split(" "),creationflags=CREATE_NO_WINDOW) as st:
+            label.master.master.openSubprocesses.append(st)
+            label.configure(text="Loading... (3s wait)")
+            sleep(3)
+            threading.Thread(target=handleNtSetTimerResolution,args=(int(minres.get()),int(maxres.get()),samples.get(),label,st), daemon=True).start()
+    else:
+        label.after(0,label.master.master.atrstressCheckbox.destroy)
+        label.master.master.varsFrame.grid_columnconfigure(4,weight=0)
+        threading.Thread(target=handleNtSetTimerResolution,args=(int(minres.get()),int(maxres.get()),samples.get(),label,None), daemon=True).start()
 
 def error(btn,msg):
     btn.configure(text=msg)

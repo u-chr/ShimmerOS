@@ -6,6 +6,7 @@ import threading
 import ssl
 from utils import resource_path
 import zipfile
+from psutil import cpu_count
 ssl_ctx = ssl.create_default_context(cafile=resource_path("dependencies/cacert.pem"))
 async def getURL(self,btn,modulename,w):
     appFrame = btn.master
@@ -58,4 +59,21 @@ async def getURL(self,btn,modulename,w):
             outputloc = path.dirname(DLpath)
             zip_ref.extractall(outputloc)
         remove(DLpath)
+        config_ini_path = path.join(outputloc,"AutoGpuAffinity","config.ini")
+        print(f"Editing {config_ini_path}")
+        logi = cpu_count(logical=True)
+        phys = cpu_count(logical=False)
+        cpus = []
+        if logi != phys: #hyperthreading is on
+            for cpu in range(logi):
+                if cpu % 2 == 0:
+                    cpus.append(cpu)
+        with open(config_ini_path,"r",encoding="utf-8") as f:
+            lines = f.readlines()
+        with open(config_ini_path,'w') as f:
+            for line in lines:
+                if line.strip().startswith("custom_cpus="):
+                    f.write(f"custom_cpus={cpus}\n")
+                else:
+                    f.write(line)
     threading.Thread(target=lambda: asyncio.run(async_download("https://github.com/valleyofdoom/AutoGpuAffinity/releases/latest/download/AutoGpuAffinity.zip",path.join(getcwd()[:2],"\\Shimmer","Software","quickaccess","AutoGpuAffinity.zip"),progressbar)), daemon=True).start() #asynchronous download

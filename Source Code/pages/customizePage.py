@@ -11,16 +11,17 @@ class customizePage(ctk.CTkFrame):
         image = wallpaperLabel.hue_image
         save_path = resource_path("assets/wallpaper.png")
         image.save(save_path)
-        windll.user32.SystemParametersInfoW(20, 0, save_path, 0)
+        windll.user32.SystemParametersInfoW(20, 0, save_path, 0x01 | 0x02)
         self.hue_control.configure(state="normal")
         self.assurance_label.configure(text="Set new wallpaper!")
         self.after(1000,self.assurance_label.configure,text="")
 
+    def changeHueText(self,shift):
+        self.hue_label.configure(text=f"Hue Shift: {int(shift):03d}")
     def changeHue(self,shift):
         self.assurance_label.configure(text="Computing hue change...")
         self.after(30, self.hueShift, self.hue_control.get())
     def hueShift(self,shift):
-        self.hue_label.configure(text=f"Hue Shift: {int(shift):03d}")
         for child in self.wallpapers_sframe.winfo_children():
             old_image = child.image
             hsv = old_image.convert("HSV")
@@ -38,7 +39,7 @@ class customizePage(ctk.CTkFrame):
         self.settings_bar = ctk.CTkFrame(self, height=sf*50, fg_color="#1d1a23", corner_radius=0)
 
         self.hue_label = ctk.CTkLabel(self.settings_bar, text="Hue Shift: 0")
-        self.hue_control = ctk.CTkSlider(self.settings_bar, to=255, width=sf*250)
+        self.hue_control = ctk.CTkSlider(self.settings_bar, to=255, width=sf*250, command=self.changeHueText)
         self.hue_control.bind("<ButtonRelease-1>", self.changeHue)
         self.hue_control.set(0)
         self.hue_label.grid(row=0,column=0,padx=5,sticky="w")

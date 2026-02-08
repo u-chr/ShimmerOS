@@ -3,8 +3,8 @@ downloads = { #category / [name to display,module location,font size]
         ["$xAuto Gpu Affinity","quickaccess.aga",14], #$x means that getURL is a procedure, not a function
         ["Autoruns","quickaccess.autoruns",20],
         ["GoInterruptPolicy","quickaccess.goip",15],
-        ["$xNSudo","quickaccess.nsudo",22]
-        
+        ["$xNSudo","quickaccess.nsudo",22],
+        ["Dynamic Timer Resolution","quickaccess.dynamictr",20]
     ],
     "Firefox based browsers": [
         ["⭐ Tor","firefox.tor",24],
@@ -45,8 +45,9 @@ downloads = { #category / [name to display,module location,font size]
         ["Malwarebytes","utility.mwb",20],
         ["Bleachbit","utility.bleachbit",21],
         ["qBittorrent","utility.qbt",20],
-        ["Free Download\nManager","utility.fdm",18],
-        ["⭐ CapFrameX","utility.cfx",20]
+        ["Free Download\nManager","utility.fdm",16],
+        ["⭐ CapFrameX","utility.cfx",20],
+        ["LM Studio","utility.lmstudio",20]
     ],
     "Media": [
         ["⭐ VLC","utility.vlc",24],
@@ -58,7 +59,8 @@ downloads = { #category / [name to display,module location,font size]
         ["HandBrake","utility.handbrake",20],
         ["⭐ Lightshot","utility.lightshot",21],
         ["ShareX","utility.sharex",22],
-        ["⭐ JPEGView","utility.jpegview",22]
+        ["⭐ JPEGView","utility.jpegview",22],
+        ["⭐ Davinci Resolve","utility.dvr",20]
     ],
     "Customisation": [
         ["Rainmeter","utility.rainmeter",21],
