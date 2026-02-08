@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.6.1"
+version = "1.6.1.1"
 
 from functools import cache
 import customtkinter as ctk
@@ -106,8 +106,7 @@ class newGUI(ctk.CTk):
         log("Outdated Shimmer, updating...")
         log("Checking if auto updater is installed...")
         
-        UPD_DIR = join(SOFTWAREP,"Updater")
-        UPD_PATH = join(UPD_DIR,"ShimmerUpdater.exe")
+        UPD_PATH = join(SOFTWAREP,"ShimmerUpdater.exe")
 
         installed = False
         while not installed:
@@ -151,7 +150,7 @@ class newGUI(ctk.CTk):
             log(f"Terminating {process}")
             process.terminate()
         gui.destroy()
-        ctypes.windll.shell32.ShellExecuteW(None,"open","cmd.exe",f'/k "{UPD_PATH}"',UPD_DIR,1)
+        ctypes.windll.shell32.ShellExecuteW(None,"open","cmd.exe",f'/k "{UPD_PATH}"',SOFTWAREP,1)
         exit(0)
 
     def loadTweaks(self):
