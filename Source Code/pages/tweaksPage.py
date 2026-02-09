@@ -41,10 +41,6 @@ def getMans():
 threading.Thread(target=getMans,daemon=True).start()
 
 class tweaksPage(ctk.CTkFrame):
-    def rmbBind(self,widget,description,directory):
-        widget.bind("<Button-3>",lambda e: self.helpbox(description,directory))
-        for child in widget.winfo_children():
-            self.rmbBind(child, description, directory)
     helpTLs = {}
     def helpbox(self, description, directory):
         if directory in self.helpTLs:
@@ -86,8 +82,9 @@ class tweaksPage(ctk.CTkFrame):
 
         
         self.dirbar = ctk.CTkScrollableFrame(self, fg_color="#232029")
+        self.dirbar.grid_columnconfigure(0, weight=1)
+        self.dirbar.grid_columnconfigure(1, weight=1)
         r=0
-        c=0
         while not master.dirs or master.dirs == "loading":
             sleep(0.01)
         
@@ -134,7 +131,7 @@ class tweaksPage(ctk.CTkFrame):
             filesdir = join(bpath,directory)
             files = listdir(filesdir)
             print("Loading " + str(filesdir))
-
+            description = "failed to load description"
             try:
                 with open(join(filesdir,"help.json"),'r') as f:
                     helpdata = json.load(f)
@@ -166,7 +163,7 @@ class tweaksPage(ctk.CTkFrame):
             requirementNotMet = False
             if requirement == "nsudo" and not exists(join(SOFTWARE_DIR,"quickaccess","NSudo.exe")):
                 requirementNotMet = True
-            localFrame = ctk.CTkFrame(self.dirbar,cursor="hand2")
+            localFrame = ctk.CTkFrame(self.dirbar)
             localFrame.nameLabel = ctk.CTkLabel(localFrame, text=directory.replace("_"," "), font=ctk.CTkFont(size=24))
             localFrame.nameLabel.pack(side="left", padx=[10,0], pady=10)
             if requirementNotMet: 
@@ -187,24 +184,22 @@ class tweaksPage(ctk.CTkFrame):
                         print(f"Stored tweaks data does not contain information on {directory}.")
                         localFrame.switch.configure(text="Unset",fg_color="#bb5555",text_color="#ff5555",text_color_disabled="#ff5555")
                     localFrame.switch.pack(side="right",padx=(0,8))
-                    self.rmbBind(localFrame,description,join(filesdir,file))
                 elif "action.bat" in files:
                     localFrame.onButton = ctk.CTkButton(localFrame, text="Apply", fg_color="#477843", hover_color="#376833", command=lambda d=directory, f=localFrame: self.SingleBattweakclicked(d,f), width=116, font=ctk.CTkFont(size=16))
                     localFrame.onButton.pack(side="right",padx=8)
-                    self.rmbBind(localFrame,description,join(filesdir,file))
                 else:
                     localFrame.errorLabel = ctk.CTkLabel(localFrame, text=file)
                     localFrame.errorLabel.pack(side="right",padx=8)
-            localFrame.grid(row=r, column=c, sticky="nsew", padx=3, pady=6)
-            self.dirbar.grid_columnconfigure(c, weight=1)
+            localFrame.grid(row=r, column=0, sticky="nsew", padx=3, pady=6)
+            descFrame = ctk.CTkFrame(self.dirbar)
+            descLabel = ctk.CTkLabel(descFrame,text=description,wraplength=max(1,round((master.width/1250*1030)/2)-75))
+            descLabel.pack(expand=True)
+            descFrame.grid(row=r, column=1, sticky="nsew", padx=3, pady=6)
             if not requirementNotMet:
                 master.shrink(localFrame.nameLabel, max(1,round((master.width/1250*1030-141)/2) - 116), 30)
             else:
                 master.shrink(localFrame.nameLabel, max(1,round((master.width/1250*1030)/2)-75), 30)
-            c += 1
-            if c > 1:
-                c = 0
-                r += 1
+            r += 1
     def __init__(self, master):
 
         super().__init__(master=master.main_area, fg_color="transparent")

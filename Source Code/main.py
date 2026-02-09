@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.6.1.1"
+version = "1.6.2"
 
 from functools import cache
 import customtkinter as ctk

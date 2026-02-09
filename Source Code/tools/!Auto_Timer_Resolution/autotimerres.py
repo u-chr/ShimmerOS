@@ -8,36 +8,42 @@ from random import randint
 import re
 from time import sleep, time
 from utils import resource_path
+lastres = 5000
+bestdelta = 1000
+bestres = -1
+results = {}
 def userstopatr(stress,label,bestlabel,NtSetTimerResolution):
-    label.master.destroy()
+    label.after(0,label.master.destroy)
     stress.terminate()
     saveTRESShortcut(bestres)
     NtSetTimerResolution(0, False, ctypes.wintypes.ULONG()) #disable temporary timer res
     Popen([r"C:\Users\lop\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\SetTimerResolution.exe.lnk"],shell=True)
 def stopatr(stress,label,bestlabel,NtSetTimerResolution):
+    NtSetTimerResolution(0, False, ctypes.wintypes.ULONG()) #disable temporary timer res
+    bestlabel.after(0,bestlabel.destroy)
     if stress != None:
         stress.terminate()
-    label.configure(text="Done, trying to apply...")
-    saveTRESShortcut(bestres)
-    label.configure(text=(f"Successfully applied {bestres}!" if exists(shortcut_location) else f"Failed, manually apply {bestres}. Guide in Discord."))
-    bestlabel.destroy()
-    NtSetTimerResolution(0, False, ctypes.wintypes.ULONG()) #disable temporary timer res
-    Popen([r"C:\Users\lop\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\SetTimerResolution.exe.lnk"],shell=True)
+    if label.master.master.atrautoApplyCheckbox.get():
+        label.configure(text="Done, trying to apply...")
+        saveTRESShortcut(bestres)
+        label.configure(text=(f"Successfully applied {bestres}!" if exists(shortcut_location) else f"Failed, manually apply {bestres}. Guide in Discord."))
+        Popen([r"C:\Users\lop\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\SetTimerResolution.exe.lnk"],shell=True)
+    else:
+        label.configure(text=f"Best resolution is {bestres} ({bestdelta})")
 
-
-lastres = 5000
-bestdelta = 1000
-bestres = -1
 import ctypes
 ntdll = ctypes.WinDLL("ntdll")
 NtSetTimerResolution = ntdll.NtSetTimerResolution
 NtSetTimerResolution.argtypes = [ctypes.wintypes.ULONG,ctypes.wintypes.BOOLEAN,ctypes.POINTER(ctypes.wintypes.ULONG)]
-results = {}
-def benchmark(res,samples,label):
+
+def benchmark(res,samples,label,bestlabel):
     global results
     global bestdelta
     global lastres
     global bestres
+    
+    if label.master.winfo_exists():
+        bestlabel.configure(text=f"Best: {bestres} {bestdelta}" if bestres!=-1 else "")
     NtSetTimerResolution(res, True, ctypes.wintypes.ULONG())
     label.configure(text=f"Benchmarking: {res}")
     with Popen((resource_path("TimerResolution\\MeasureSleep").split(" ") + ["--samples",samples]),stdout=PIPE,text=True,creationflags=CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS | HIGH_PRIORITY_CLASS) as MeasureSleep:
@@ -53,9 +59,6 @@ def benchmark(res,samples,label):
             bestdelta = r
             bestres = res
 
-
-
-
 def handleNtSetTimerResolution(minres,maxres,samples,label,stress):
     global results
     global bestdelta
@@ -68,26 +71,21 @@ def handleNtSetTimerResolution(minres,maxres,samples,label,stress):
         stopbtn = ctk.CTkButton(label.master,text="Apply current best",fg_color="#ff3333",hover_color="#ff6666",text_color="#ffffff",command=lambda: userstopatr(stress,label,bestlabel,NtSetTimerResolution))
         stopbtn.pack(pady=5)
         for res in range(minres,maxres+1,5):
-            if label.master.winfo_exists():
-                bestlabel.configure(text=f"Best: {bestres} {bestdelta}" if bestres!=-1 else "")
-            else:
-                if stress != None:
-                    stress.terminate()
-                raise Exception("user stopped timer res")
-            benchmark(res,samples,label)
+            benchmark(res,samples,label,bestlabel)
         for k,v in results.items():
             if v < bestdelta:
                 bestdelta = v
                 bestres = k
         results = {}
         for res in range(bestres-3,bestres+3):
-            benchmark(res,samples,label)
+            if res >= 5000 and res <= 15625:
+                benchmark(res,samples,label,bestlabel)
         for k,v in results.items():
             if v < bestdelta:
                 bestdelta = v
                 bestres = k
         stopatr(stress,label,bestlabel,NtSetTimerResolution)
-    except Exception as e:
+    except FileNotFoundError as e:
         print(f"error during timer res\n{str(e)}")
         if stress != None:
             stress.terminate()
@@ -121,8 +119,16 @@ running = False
 
 def on_close(self):
     print("close atrtoplevel")
+    global results
+    global bestdelta
+    global lastres
+    global bestres
+    results = {}
+    bestdelta = 1000
+    bestres = -1
+    lastres = 5000
     self.stop.set()
-    self.ATRtoplevel.destroy()
+    self.after(0,self.ATRtoplevel.destroy)
     for process in self.openSubprocesses:
         print(f"Terminating {process}")
         process.terminate()
@@ -138,7 +144,7 @@ def apply(self):
     if createnewtl:
         self.ATRtoplevel = ctk.CTkToplevel(self, fg_color="#201d26")
         self.ATRtoplevel.protocol("WM_DELETE_WINDOW", lambda: on_close(self))
-        self.ATRtoplevel.geometry("600x200")
+        self.ATRtoplevel.geometry("675x200")
         self.ATRtoplevel.title("Apply Timer Resolution")
 
         #create a frame to hold entries, then pack the frame and submit button
@@ -177,9 +183,14 @@ def apply(self):
         samplesFrame.grid(row=0,column=2)
 
 
+        self.atrautoApplyCheckbox = ctk.CTkCheckBox(self.varsFrame,text="Auto Apply")
+        self.atrautoApplyCheckbox.select()
+        self.atrautoApplyCheckbox.grid(row=0,column=3)
+
+
         self.atrstressCheckbox = ctk.CTkCheckBox(self.varsFrame,text="Stress Test")
         self.atrstressCheckbox.select()
-        self.atrstressCheckbox.grid(row=0,column=3)
+        self.atrstressCheckbox.grid(row=0,column=4)
 
 
         for i in range(4):
@@ -254,5 +265,5 @@ def parseAndStart(minres,maxres,samples,btn):
     elif max > 15625:
         error(btn,"Maximum must be less than 15626.")
     else:
-        btn.destroy()
+        btn.after(0,btn.destroy)
         btn.master.master.timerresthread.start()

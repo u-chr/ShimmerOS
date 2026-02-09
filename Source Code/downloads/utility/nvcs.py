@@ -3,7 +3,7 @@ from pathlib import Path
 import subprocess
 async def getURL(ssl_ctx,continuation,progressbar,completeDownload):
     try:
-        proc = subprocess.Popen(["curl", "https://sourceforge.net/projects/nvcleanstall/files/latest/download"],stdout=subprocess.PIPE)
+        proc = subprocess.Popen(["curl", "https://sourceforge.net/projects/nvcleanstall/files/latest/download"],stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
         html = proc.communicate()[0]
         print(html)
         soup = BeautifulSoup(html,"html.parser")

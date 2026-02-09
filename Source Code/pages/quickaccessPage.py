@@ -12,7 +12,8 @@ names = {
 }
 
 extras = {
-    "USB Latency Analyzer": [["cmd","/c","powershell","-NoExit","-NoProfile","-ExecutionPolicy","Bypass","-Command","irm https://tools.mariusheier.com/cpudirect.ps1 | iex"],20]
+    "USB Latency Analyzer": [["cmd","/c","powershell","-NoExit","-NoProfile","-ExecutionPolicy","Bypass","-Command","irm https://tools.mariusheier.com/cpudirect.ps1 | iex"],20],
+    "Measure Timer Resolution": [[f"{getcwd()[:2]}/Shimmer/Software/_internal/TimerResolution/MeasureSleep.exe"],20]
 }
 class quickaccessPage(ctk.CTkFrame):
     def __init__(self, master):
@@ -27,9 +28,14 @@ class quickaccessPage(ctk.CTkFrame):
             downloadedApps = listdir(folderLoc)
 
         launchFrame = ctk.CTkFrame(self, fg_color="transparent")
-        for index,app in enumerate(downloadedApps):
-            row = index // 4 + 1
-            column = index % 4
+        column = -1
+        row = 0
+        for app in downloadedApps:
+            print(f"Adding {app}")
+            column += 1
+            if column % 4 == 0:
+                row += 1
+                column = 0
 
             appFrame = ctk.CTkFrame(launchFrame)
             appFrame.grid_propagate(False)
@@ -57,11 +63,13 @@ class quickaccessPage(ctk.CTkFrame):
             appLaunchButton.grid(row=0,column=0,sticky="nsew")
             appFrame.grid(row=row,column=column,padx=5,pady=5,sticky="ew")
         
-        for index, (name, data) in enumerate(extras.items()):
+        for name, data in extras.items():
             cmd, font_size = data
-
-            row = index // 4 + 1
-            column = index % 4
+            print(f"Adding {name}")
+            column += 1
+            if column % 4 == 0:
+                row += 1
+                column = 0
 
             appFrame = ctk.CTkFrame(launchFrame)
             appFrame.grid_propagate(False)
