@@ -10,35 +10,35 @@ import json
 import wmi
 global gpumans
 global cpumans
-gpumans = []
-cpumans = []
+mans = [threading.Event(),threading.Event()]
 import pythoncom
-def getMans():
+types = ["intel","nvidia","amd"]
+def getGPUMans(self):
     pythoncom.CoInitialize()
     global gpumans
-    global cpumans
-    types = ["intel","nvidia","amd"]
-    gpumans = []
-    cpumans = []
-
     c = wmi.WMI()
-    for cpu in c.Win32_Processor():
-        name = cpu.Name.lower()
-        for t in types:
-            if t in name:
-                cpumans.append(t)
-
+    self.GPUMans = []
     for gpu in c.Win32_VideoController():
         name = gpu.Name.lower()
         for t in types:
             if t in name:
-                gpumans.append(t)
-
-    print(f"Detected GPU: {gpumans}")
-    print(f"Detected CPU: {cpumans}")
+                self.GPUMans.append(t)
+    print(f"Detected GPUs: {self.GPUMans}")
+    mans[0].set()
     pythoncom.CoUninitialize()
-
-threading.Thread(target=getMans,daemon=True).start()
+def getCPUMans(self):
+    pythoncom.CoInitialize()
+    global cpumans
+    c = wmi.WMI()
+    self.CPUMans = []
+    for cpu in c.Win32_Processor():
+        name = cpu.Name.lower()
+        for t in types:
+            if t in name:
+                self.CPUMans.append(t)
+    print(f"Detected CPUs: {self.CPUMans}")
+    mans[1].set()
+    pythoncom.CoUninitialize()
 
 class tweaksPage(ctk.CTkFrame):
     helpTLs = {}
@@ -149,7 +149,7 @@ class tweaksPage(ctk.CTkFrame):
                     CPUReq = helpdata["cpu"]
             except Exception as e:
                 CPUReq = "none"
-            if not (CPUReq == "none" or CPUReq in cpumans):
+            if not (CPUReq == "none" or CPUReq in master.CPUMans):
                 continue
 
             try:
@@ -157,7 +157,7 @@ class tweaksPage(ctk.CTkFrame):
                     GPUReq = helpdata["gpu"]
             except Exception as e:
                 GPUReq = "none"
-            if not (GPUReq == "none" or GPUReq in gpumans):
+            if not (GPUReq == "none" or GPUReq in master.GPUMans):
                 continue
 
             requirementNotMet = False
@@ -205,23 +205,20 @@ class tweaksPage(ctk.CTkFrame):
         super().__init__(master=master.main_area, fg_color="transparent")
         self.titleBar = ctk.CTkLabel(self, text="Tweaks", font=ctk.CTkFont(size=32,weight="bold"), height=50)
         self.titleBar.pack(fill="x")
-        if not (gpumans or cpumans):
+        if not (master.GPUMans or master.CPUMans):
+            print("abc")
             self.tlabel = ctk.CTkLabel(self,text="Loading hardware information...",font=ctk.CTkFont(size=32))
             self.tlabel.pack(side="top",pady=20)
         else:
             self.tlabel = None
-        def check_loaded():
-            if gpumans and cpumans and gpumans[0] is not None and cpumans[0] is not None:
-                if self.tlabel != None:
-                    self.tlabel.destroy()
-                self.after(0, lambda: self.loaded(master))
-            else:
-                self.after(50, check_loaded)
-
-        
-        
-        check_loaded()
-
+        def wait_to_load():
+            global mans
+            for event in mans:
+                event.wait()
+            if self.tlabel != None:
+                self.after(0,self.tlabel.destroy)
+            self.loaded(master)
+        threading.Thread(target=wait_to_load,daemon=True).start()
     def colourlabel(self,proc,frame,state,directory,colour):
         label = frame.nameLabel
         proc.wait()

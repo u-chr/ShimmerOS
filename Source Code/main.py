@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.7"
+version = "1.7.0.1"
 
 from functools import cache
 import customtkinter as ctk
@@ -188,6 +188,9 @@ class newGUI(ctk.CTk):
         global settingsPage
         from pages.settingsPage import settingsPage
         settingsPage.setupSettings(settingsPage,self)
+        from pages.tweaksPage import getCPUMans,getGPUMans
+        threading.Thread(target=getGPUMans,args=(self,),daemon=True).start()
+        threading.Thread(target=getCPUMans,args=(self,),daemon=True).start()
         from pages.sidebar import sidebar
         global homePage
         from pages.homePage import homePage
