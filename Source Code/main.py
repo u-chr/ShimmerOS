@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-version = "1.6.2"
+version = "1.7"
 
 from functools import cache
 import customtkinter as ctk
@@ -14,6 +14,7 @@ from os.path import isdir,join,exists
 from math import ceil
 import ctypes
 from sys import exit
+from time import time
 
 drive = getcwd()[:2]
 SHIMMERP = join(drive,"/Shimmer/")
@@ -253,18 +254,21 @@ class newGUI(ctk.CTk):
 
     def downloadsPage_init(self):
         if self.currentTab != "downloads":
+            start = time()
             from pages.downloadsPage import downloadsPage
             self.currentTab = "downloads"
             # hide page
             for child in self.main_area.winfo_children():
                 child.grid_forget()
-            
             if self.cachedFrames["downloads"] is None:
+                threading.Thread(target=child.grid_forget,daemon=True).start()
+                # downloads page loading will take long enough so that there isnt a blank page here
                 self.cachedFrames["downloads"] = downloadsPage(master=self)
             
             # show downloads page
             self.main_area.page = self.cachedFrames["downloads"]
             self.main_area.page.grid(row=0,column=1,sticky="nsew")
+            print(f"{(time() - start):.7f} seconds to load downloads page")
     
     def tweaksPage_init(self):
         if self.currentTab != "tweaks":

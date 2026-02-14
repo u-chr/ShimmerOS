@@ -203,7 +203,7 @@ class tweaksPage(ctk.CTkFrame):
     def __init__(self, master):
 
         super().__init__(master=master.main_area, fg_color="transparent")
-        self.titleBar = ctk.CTkLabel(self, text="Tweaks (right click a tweak for info)", font=ctk.CTkFont(size=32,weight="bold"), height=50)
+        self.titleBar = ctk.CTkLabel(self, text="Tweaks", font=ctk.CTkFont(size=32,weight="bold"), height=50)
         self.titleBar.pack(fill="x")
         if not (gpumans or cpumans):
             self.tlabel = ctk.CTkLabel(self,text="Loading hardware information...",font=ctk.CTkFont(size=32))
@@ -222,14 +222,11 @@ class tweaksPage(ctk.CTkFrame):
         
         check_loaded()
 
-    def colourlabel(self,proc,label,colour):
+    def colourlabel(self,proc,frame,state,directory,colour):
+        label = frame.nameLabel
         proc.wait()
         self.after(0,lambda: label.configure(text_color=colour))
         label.master.switch.configure(state="normal")
-    
-    def ONOFFtweakClicked(self,directory,frame):
-        frame.switch.configure(state="disabled")
-        state = frame.switchvar.get()
         if state == "on":
             frame.switch.configure(text="Enabled",fg_color="#55bb55",text_color="#55ff55",text_color_disabled="#55ff55")
             with open(DATA_DIR,'w') as f:
@@ -240,9 +237,14 @@ class tweaksPage(ctk.CTkFrame):
             with open(DATA_DIR,'w') as f:
                 data[directory] = 0
                 json.dump(data,f,indent=4)
+    
+    def ONOFFtweakClicked(self,directory,frame):
+        frame.switch.configure(state="disabled")
+        frame.switch.configure(text="Applying...",fg_color="#bbbbbb",text_color="#ffffff",text_color_disabled="#ffffff")
+        state = frame.switchvar.get()
         path = abspath(join(self.master.master.basepath, directory, f"{state}.bat"))
         print(f"Running |{path}|.")
-        self.colourlabel(Popen([f'{path}'], shell=True, text=True),frame.nameLabel,("#aaffaa"))
+        self.colourlabel(Popen([f'{path}'], shell=True, text=True),frame,state,directory,("#aaffaa"))
     def regTweakClicked(self,directory,frame):
         print(f"Running |{directory}|.")
         proc = Popen(["regedit","/s",directory], shell=True)

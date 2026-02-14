@@ -13,7 +13,8 @@ names = {
 
 extras = {
     "USB Latency Analyzer": [["cmd","/c","powershell","-NoExit","-NoProfile","-ExecutionPolicy","Bypass","-Command","irm https://tools.mariusheier.com/cpudirect.ps1 | iex"],20],
-    "Measure Timer Resolution": [[f"{getcwd()[:2]}/Shimmer/Software/_internal/TimerResolution/MeasureSleep.exe"],20]
+    "Measure Timer Resolution": [[f"{getcwd()[:2]}/Shimmer/Software/_internal/TimerResolution/MeasureSleep.exe"],20],
+    "Activate Windows": [["powershell","-w","h","-NoExit","-NoProfile","-ExecutionPolicy","Bypass","-Command","irm https://get.activated.win | iex"],20]
 }
 class quickaccessPage(ctk.CTkFrame):
     def __init__(self, master):

@@ -40,36 +40,38 @@ def apply(self):
                 amdocl = ctk.StringVar(value="amdocl")
                 amdocl_cb = ctk.CTkCheckBox(confframe,text="AMDOCL\nNeeded for Adobe, Davinci, HandBrake, etc",variable=amdocl,onvalue="amdocl",offvalue="DISABLED")
                 amdocl_cb.select()
-                amdocl_cb.pack(side="top",padx=5,pady=5)
+                amdocl_cb.grid(row=0,padx=5,pady=5,sticky="w")
 
                 amdpcibridge = ctk.StringVar(value="amdpcibridge")
                 amdpcibridge_cb = ctk.CTkCheckBox(confframe,text="amdpcibridge\nAllows CPU to communicate with AXI based PCIe hardware",variable=amdpcibridge,onvalue="amdpcibridge",offvalue="DISABLED")
                 amdpcibridge_cb.select()
-                amdpcibridge_cb.pack(side="top",padx=5,pady=5)
+                amdpcibridge_cb.grid(row=1,padx=5,pady=5,sticky="w")
 
                 amdwin = ctk.StringVar(value="amdwin")
                 amdwin_cb = ctk.CTkCheckBox(confframe,text="amdwin\nSpeeds up GPU frame capturing on Windows",variable=amdwin,onvalue="amdwin",offvalue="DISABLED")
                 amdwin_cb.select()
-                amdwin_cb.pack(side="top",padx=5,pady=5)
+                amdwin_cb.grid(row=2,padx=5,pady=5,sticky="w")
 
                 amdxe = ctk.StringVar(value="amdxe")
                 amdxe_cb = ctk.CTkCheckBox(confframe,text="amdxe\nUpdate checking and data tracking.",variable=amdxe,onvalue="amdxe",offvalue="DISABLED")
                 amdxe_cb.select()
-                amdxe_cb.pack(side="top",padx=5,pady=5)
+                amdxe_cb.grid(row=3,padx=5,pady=5,sticky="w")
 
                 amdfdans = ctk.StringVar(value="amdfdans")
                 amdfdans_cb = ctk.CTkCheckBox(confframe,text="amdfdans\nAMD Dynamic Audio Noise Suppression Service",variable=amdfdans,onvalue="amdfdans",offvalue="DISABLED")
                 amdfdans_cb.select()
-                amdfdans_cb.pack(side="top",padx=5,pady=5)
+                amdfdans_cb.grid(row=4,padx=5,pady=5,sticky="w")
 
                 amdfendr = ctk.StringVar(value="amdfendr")
                 amdfendr_cb = ctk.CTkCheckBox(confframe,text="amdfendr\nAMD Crash Defender Service",variable=amdfendr,onvalue="amdfendr",offvalue="DISABLED")
                 amdfendr_cb.select()
-                amdfendr_cb.pack(side="top",padx=5,pady=5)
+                amdfendr_cb.grid(row=5,padx=5,pady=5,sticky="w")
 
-                HDABus = ctk.StringVar(value="HDABus")
-                HDABus_cb = ctk.CTkCheckBox(confframe,text="HDABus\nMonitor HDMI Audio Support",variable=HDABus,onvalue=0,offvalue="HDABus")
-                HDABus_cb.pack(side="top",padx=5,pady=5)
+                HDABus = ctk.StringVar(value=0)
+                HDABus_cb = ctk.CTkCheckBox(confframe,text="HDABus\nMonitor HDMI Audio Support",variable=HDABus,onvalue=1,offvalue=0)
+                HDABus_cb.deselect()
+                HDABus_cb.grid(row=6,padx=5,pady=5,sticky="w")
+
                 self.AMDVDDtoplevel.geometry("400x365")
                 confframe.pack(side="top",fill="both",expand=True)
                 def cont():
@@ -90,7 +92,7 @@ def apply(self):
                         ])
                         statusLabel.configure(text="Extracting complete\nDeleting unnecessary files...")
                         DRIVER_DIR = Path(EXTRACTED_DIR) / "Packages" / "Drivers" / "Display" / "WT6A_INF"
-                        delete = [amdocl.get(),amdpcibridge.get(),amdwin.get(),amdxe.get(),amdfdans.get(),amdfendr.get()]
+                        delete = [amdocl.get(),amdpcibridge.get(),amdwin.get(),amdxe.get(),amdfdans.get(),amdfendr.get(),HDABus.get()]
                         print(f"Deleting:\n{delete}")
                         mkdir(CLEAN_DIR)
                         global INF
@@ -130,15 +132,14 @@ def apply(self):
                                         statusLabel.configure(text="Better driver already installed\nuninstall the old one first.")
                                     else:
                                         statusLabel.configure(text=f"Failed with code {Dproc.returncode}")
-                                if HDABus.get():
+                                if HDABus.get() == 1:
                                     print("installing hdabus")
                                     proc = Popen(["pnputil","/add-driver",DRIVER_DIR.parent.parent / "Audio" / "HDABus" / "WT64A","/install"],creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,stdout=PIPE,stderr=PIPE,text=True,close_fds=True)
                                     proc.wait()
                                     if proc.returncode == 0:
                                         statusLabel.configure(text=statusLabel.cget("text") + "\nHDABus succesfully installed.")
-
                                     else:
-                                        proc.communicate()
+                                        proc.communicate() #forgot what this does its probably useless
                                         if proc.returncode == 5:
                                             statusLabel.configure(text=statusLabel.cget("text") + "\nHDABus installation failed: not admin")
                                         if proc.returncode == 259:
@@ -146,8 +147,10 @@ def apply(self):
                                         else:
                                             statusLabel.configure(text=statusLabel.cget("text") + f"\nHDABus installation failed with code {proc.returncode}")
                             if self.AMDVDDtoplevel.master.settings["delete_driver_files_after_debloat"]:
+                                print("Attempting to delete files..")
                                 rmtree(CLEAN_DIR)
                                 remove(EXE_PATH)
+                                rmtree(EXTRACTED_DIR)
                                         
                         else:
                             raise Exception("INF file not found")
