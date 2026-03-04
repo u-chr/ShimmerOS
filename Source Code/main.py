@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
-version = "1.7.0.1"
+version = "1.7.0.2"
+import ctypes
+import sys
+admin = False
+#thanks to chr for helping me test this <3 (i planned to make this for like a month)
+try:
+    if not ctypes.windll.shell32.IsUserAnAdmin():
+        print("requesting admin permissions")
+        success =  True if ctypes.windll.shell32.ShellExecuteW(None,"runas",sys.executable," ".join(sys.argv),None,1) > 32 else False
+        if success:
+            sys.exit()
+        else:
+            print("failed to rerun as admin @chr help me")
+    else:
+        print("Running with admin privileges!")
+        admin = True
+except Exception as e:
+    print(f"error requesting admin perms {e}")
+
 
 from functools import cache
 import customtkinter as ctk
@@ -12,8 +30,6 @@ from datetime import datetime
 from os import listdir,getcwd,mkdir
 from os.path import isdir,join,exists
 from math import ceil
-import ctypes
-from sys import exit
 from time import time
 
 drive = getcwd()[:2]
@@ -152,7 +168,7 @@ class newGUI(ctk.CTk):
             process.terminate()
         gui.destroy()
         ctypes.windll.shell32.ShellExecuteW(None,"open","cmd.exe",f'/k "{UPD_PATH}"',SOFTWAREP,1)
-        exit(0)
+        sys.exit(0)
 
     def loadTweaks(self):
         self.basepath = TWEAKSP
@@ -185,6 +201,20 @@ class newGUI(ctk.CTk):
         
         from logger.logger import ConsoleLogger
         self.logger = ConsoleLogger(master=self)
+        super().__init__(fg_color="#201d26")
+        if not admin:
+            print("failed to run as admin, ask chr in shimmer discord for help")
+            warningTL = ctk.CTkToplevel(self)
+            warningTL.title("permissions error")
+            warningTL.geometry("300x150")
+            warningTL.resizable(False, False)
+            warningTL.attributes("-topmost", True)
+            warningTL.after(10,lambda: self.attributes("-topmost", False))
+            warningLabel = ctk.CTkLabel(warningTL,text="failed to run as admin\nask chr in shimmer discord for help")
+            warningLabel.pack()
+        else:
+            print("successfully running as admin! :D")
+        
         global settingsPage
         from pages.settingsPage import settingsPage
         settingsPage.setupSettings(settingsPage,self)
@@ -194,14 +224,13 @@ class newGUI(ctk.CTk):
         from pages.sidebar import sidebar
         global homePage
         from pages.homePage import homePage
-        print("hello log viewer")
         self.CurrentVersion = version
         self.dirs = "loading"
         self.drive = drive
         print(f"Running from drive {self.drive}")
         if createTweaks:
             threading.Thread(target=self.loadTweaks, daemon=True).start()
-        super().__init__(fg_color="#201d26")
+        
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=0)  # sidebar (fixed)
         self.grid_columnconfigure(1, weight=1)  # main area (resizable)
