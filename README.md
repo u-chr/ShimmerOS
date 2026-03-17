@@ -57,4 +57,14 @@ Buttons are provided to apply / undo tweaks from ShimmerOS
     <ul>
       <li>Automatically debloats the NVIDIA driver and gives you only what you need.<br></li>
     </ul>
+  <br>
+  <li><strong>Auto AMD Driver Debloat:</strong></li>
+    <ul>
+      <li>Automatically debloats the AMD driver and gives you only what you need. Options are provided to enable or disable certain attributes<br></li>
+    </ul>
+  <br>
+  <li><strong>Permanent High Priority:</strong></li>
+    <ul>
+      <li>Lets you select an executable to permanently set to high priority via the windows registry.
+    </ul>
 </ul>
