@@ -203,7 +203,7 @@ class tweaksPage(ctk.CTkFrame):
     def __init__(self, master):
 
         super().__init__(master=master.main_area, fg_color="transparent")
-        self.titleBar = ctk.CTkLabel(self, text="Tweaks", font=ctk.CTkFont(size=32,weight="bold"), height=50)
+        self.titleBar = ctk.CTkLabel(self, text="Configuration", font=ctk.CTkFont(size=32,weight="bold"), height=50)
         self.titleBar.pack(fill="x")
         if not (master.GPUMans or master.CPUMans):
             print("abc")
