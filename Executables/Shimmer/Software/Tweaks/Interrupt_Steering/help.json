@@ -1,0 +1,3 @@
+{
+	"description":"Interrupt steering is a feature that dynamically distributes device interrupts to spread load across cores. Disabling this may improve performance, though you should manually set affinities for your devices first."
+}

@@ -1,0 +1,16 @@
+{
+    "Force_FSE": 0,
+    "Network_Optimizations": 1,
+    "Notifications": 0,
+    "UAC": 1,
+    "VBS": 1,
+	"Global_Timer_Res": 0,
+	"Mitigations": 1,
+	"Hyper-V": 0,
+	"Printing_Support": 0,
+	"MMCSS": 1,
+	"Power_Saving": 1,
+	"Interrupt_Steering": 1,
+	"Spectre_and_Meltdown": 1,
+	"Clipboard_History": 0
+}

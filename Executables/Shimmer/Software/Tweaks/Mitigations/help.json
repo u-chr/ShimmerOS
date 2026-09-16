@@ -1,0 +1,4 @@
+{
+	"description":"Toggles ALL mitigations.",
+    "depends": ["VBS","Spectre and Meltdown"]
+}

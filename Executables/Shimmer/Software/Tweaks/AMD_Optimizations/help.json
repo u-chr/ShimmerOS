@@ -1,0 +1,4 @@
+{
+	"description":"Applies optimizations for AMD GPUs. Made by imribiy.\nhttps://github.com/imribiy/amd-gpu-tweaks",
+	"gpu": "amd"
+}
