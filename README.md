@@ -17,7 +17,6 @@ I do also want to clarify that security is **NOT** the same thing as privacy. Th
 ## README TBD
 
 Join our Discord server!
-https://dsc.gg/ShimmerOS
-https://discord.com/invite/Tgc4Ka4FQ7
+https://dsc.gg/ShimmerOS / https://discord.com/invite/Tgc4Ka4FQ7
 
 Repository of the software/toolkit: https://github.com/loplxl/ShimmerOS
