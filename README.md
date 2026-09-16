@@ -3,7 +3,7 @@ An extremely performance &amp; privacy-focused playbook designed to get the abso
 
 Keyword **EXTREMELY**, this playbook is NOT designed for people who:
 - Use features such as Phone Link, biometric login, OneDrive, System Restore/backup, etc.
-- Need to use users accounts linked to Microsoft
+- Need to use user accounts linked to Microsoft
 - Need battery life
 - Need built-in security features such as Bitlocker or Defender
 - Need regular Windows updates (will work in the future)
