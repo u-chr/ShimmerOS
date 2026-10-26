@@ -1,3 +1,3 @@
 {
-	"description":"Toggles Spectre & Meltdown mitigations. Generally reduces performance, especially on older hardware, though enabling may improve performance on some newer Ryzen CPUs."
+	"description":"Toggles Spectre & Meltdown mitigations. Enabling hurts performance especially on older hardware, should be left enabled on AMD due to a performance regression."
 }
