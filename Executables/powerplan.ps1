@@ -1,6 +1,3 @@
-powercfg -import "C:\Shimmer\Temp\Shimmer.pow" 67676767-6767-6767-6767-676767676767
-powercfg -import "C:\Shimmer\Temp\ShimmerHetero.pow" 69696969-6969-6969-6969-696969696969
-
 Add-Type @"
 using System;
 using System.Collections.Generic;
@@ -29,8 +26,10 @@ public class C {
 
 if ([C]::HasECores()) {
 	Write-Output "Hybrid CPU"
-    powercfg -setactive 69696969-6969-6969-6969-696969696969
+	powercfg -import "C:\Shimmer\Temp\ShimmerHetero.pow" 67676767-6767-6767-6767-676767676767
+    powercfg -setactive 67676767-6767-6767-6767-676767676767
 } else {
 	Write-Output "Non-hybrid CPU"
+	powercfg -import "C:\Shimmer\Temp\Shimmer.pow" 67676767-6767-6767-6767-676767676767
     powercfg -setactive 67676767-6767-6767-6767-676767676767
 }
