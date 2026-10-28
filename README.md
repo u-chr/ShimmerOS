@@ -1,20 +1,17 @@
 # ShimmerOS
 An extremely performance &amp; privacy-focused playbook designed to get the absolute most out of Windows.
 
-Keyword **EXTREMELY**, this playbook is NOT designed for people who:
-- Use features such as Phone Link, biometric login, OneDrive, System Restore/backup, etc.
-- Need to use user accounts linked to Microsoft
-- Need battery life
-- Need built-in security features such as Bitlocker or Defender
-- Need regular Windows updates (will work in the future)
+This playbook is **NOT** designed for people who use:
+- Features such as Phone Link, biometric login, OneDrive, System Restore/backup, etc.
+- User accounts linked to Microsoft
+- Built-in security features such as BitLocker and Defender, though third-party alternatives still work
+- Windows updates
 
 If you need any of the above, don't be surprised when you realize such features do not function after installing.
 
-This playbook is designed to be as lightweight and clean as possible while also significantly improving the responsiveness, performance and stability of Windows, though that does mean some sacrifices have to be made.
+This playbook is designed to be as lightweight and clean as possible while also significantly improving the responsiveness, performance, stability and usability of Windows.
 
-I do also want to clarify that security is **NOT** the same thing as privacy. This playbook focuses heavily on privacy, but does not prioritize security.
-
-Supports Windows 10 20H2-22H2, IoT LTSC & Windows 11 21H2-25H2
+Supports Windows 10 20H2-22H2, IoT LTSC & Windows 11 21H2-26H2
 
 #### README TBD
 
