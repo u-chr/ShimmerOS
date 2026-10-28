@@ -69,6 +69,7 @@ actions:
 
   - !status: {status: 'Downloading DirectX'}
   - !download: {url: 'https://download.microsoft.com/download/8/4/A/84A35BF1-DAFE-4AE8-82AF-AD2AE20B6B14/directx_Jun2010_redist.exe', destination: '%temp%\DirectX.exe', overwrite: true}
+  
   - !status: {status: 'Installing DirectX'}
   - !cmd: {command: '"%temp%\DirectX.exe" /Q /C /T:%temp%\DirectX', runas: currentUserElevated, wait: true}
   - !cmd: {command: '"%temp%\DirectX\DXSETUP.exe" /silent', runas: currentUserElevated, wait: true}
@@ -76,9 +77,18 @@ actions:
 
   - !status: {status: 'Downloading 7-Zip'}
   - !download: {git: 'https://github.com/ip7z/7zip', regex: '^7z.*-x64\.exe$', destination: '%temp%\7Zip.exe', overwrite: true}
+  
   - !status: {status: 'Installing 7-Zip'}
   - !cmd: {command: '"%temp%\7Zip.exe" /S', runas: currentUserElevated, wait: true}
+
+  - !status: {status: 'Downloading StartAllBack'}
+  - !download: {url: 'https://www.startallback.com/download.php', destination: '%temp%\StartAllBack.exe', option: "install-startallback", overwrite: true}
   
+  - !status: {status: 'Installing StartAllBack'}
+  - !cmd: {command: '"%temp%\StartAllBack.exe" /install /silent /allusers', runas: currentUserElevated, option: "install-startallback", wait: true}
+  - !registryValue: {path: 'HKCU\Software\StartIsBack', value: 'LegacyTaskbar', type: REG_DWORD, data: '0', option: "install-startallback"}
+  - !registryValue: {path: 'HKCU\Software\StartIsBack', value: 'FrameStyle', type: REG_DWORD, data: '0', option: "install-startallback"}
+
   - !status: {status: 'Downloading Shimmer Software'}
   - !download: {url: 'https://github.com/loplxl/ShimmerOS/releases/latest/download/Shimmer.zip', destination: '%temp%\Shimmer.zip', overwrite: true}
   - !status: {status: 'Installing Shimmer Software'}
@@ -298,6 +308,7 @@ actions:
   - !registryKey: {path: 'HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc', operation: delete}
   - !registryKey: {path: 'HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc', operation: delete}
   - !registryKey: {path: 'HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService', operation: delete}
+  - !registryKey: {path: 'HKLM\SYSTEM\CurrentControlSet\Services\mddlpsvc', operation: delete}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WTDS\Components', value: 'ServiceEnabled', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Edge', value: 'SmartScreenEnabled', type: REG_SZ, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost', value: 'EnableWebContentEvaluation', type: REG_DWORD, data: '0'}
@@ -444,9 +455,6 @@ actions:
     exeDir: true
     wait: true
     runas: currentUserElevated
-    
-  # Disable Memory Compression
-  - !powerShell: {command: 'Disable-MMAgent -MemoryCompression'}
   
   # Disable DMA Remapping
   - !cmd: {command: 'for /f %i in (''reg query "HKLM\SYSTEM\CurrentControlSet\Services" /s /f "DmaRemappingCompatible" ^| find /i "Services\" '') do reg add "%i" /v "DmaRemappingCompatible" /t REG_DWORD /d 0 /f', exeDir: true, wait: true, runas: currentUserElevated}
@@ -460,7 +468,7 @@ actions:
   # Enable Optimization for Windowed Games
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\DirectX\UserGpuPreferences', value: 'DirectXUserGlobalSettings', type: REG_SZ, data: 'SwapEffectUpgradeEnable=1;'}
   
-  # 25H2 Native NVMe Driver
+  # 25H2+ Native NVMe Driver
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Policies\Microsoft\FeatureManagement\Overrides', value: '156965516', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Policies\Microsoft\FeatureManagement\Overrides', value: '1853569164', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Policies\Microsoft\FeatureManagement\Overrides', value: '735209102', type: REG_DWORD, data: '1'}
@@ -541,30 +549,15 @@ actions:
 
   # Services
   - !writeStatus: {status: 'Configuring Services'}
-  - !service: {name: 'hvcrash', operation: change, startup: 4}
-  - !service: {name: 'HvHost', operation: change, startup: 4}
-  - !service: {name: 'hvservice', operation: change, startup: 4}
-  - !service: {name: 'hyperkbd', operation: change, startup: 4}
-  - !service: {name: 'hypervideo', operation: change, startup: 4}
-  - !service: {name: 'vid', operation: change, startup: 4}
-  - !service: {name: 'vdrvroot', operation: change, startup: 4}
-  - !service: {name: 'vsmraid', operation: change, startup: 4}
-  - !service: {name: 'VSTXRAID', operation: change, startup: 4}
-  - !service: {name: 'gencounter', operation: change, startup: 4}
-  - !service: {name: 'BcastDVRUserService', operation: change, startup: 4}
-
   - !service: {name: 'AarSvc', operation: change, startup: 4}
   - !service: {name: 'AJRouter', operation: change, startup: 4}
   - !service: {name: 'AppIDSvc', operation: change, startup: 4}
-  - !service: {name: 'applockerfltr', operation: change, startup: 4}
-  - !service: {name: 'AxInstSV', operation: change, startup: 4}
   - !service: {name: 'bam', operation: change, startup: 4}
+  - !service: {name: 'BcastDVRUserService', operation: change, startup: 4}
   - !service: {name: 'BDESVC', operation: change, startup: 4}
   - !service: {name: 'Beep', operation: change, startup: 4}
-  - !service: {name: 'bttflt', operation: change, startup: 4}
   - !service: {name: 'cbdhsvc', operation: change, startup: 4}
   - !service: {name: 'CDPSvc', operation: change, startup: 4}
-  - !service: {name: 'circlass', operation: change, startup: 4}
   - !service: {name: 'CldFlt', operation: change, startup: 4}
   - !service: {name: 'CloudBackupRestoreSvc', operation: change, startup: 4}
   - !service: {name: 'CloudIdSvc', operation: change, startup: 4}
@@ -574,129 +567,88 @@ actions:
   - !service: {name: 'dmwappushservice', operation: change, startup: 4}
   - !service: {name: 'diagsvc', operation: change, startup: 4}
   - !service: {name: 'diagtrack', operation: change, startup: 4}
+  - !service: {name: 'diagnosticshub.standardcollector.service', operation: change, startup: 4}
   - !service: {name: 'dps', operation: change, startup: 4}
   - !service: {name: 'dusmsvc', operation: change, startup: 4}
-  - !service: {name: 'AssignedAccessManagerSvc', operation: change, startup: 4}
   - !service: {name: 'WSAIFabricSvc', operation: change, startup: 4}
-  - !service: {name: 'PimIndexMaintenanceSvc', operation: change, startup: 4}
-  - !service: {name: 'shpamsvc', operation: change, startup: 4}
   - !service: {name: 'EFS', operation: change, startup: 4} 
-  - !service: {name: 'embeddedmode', operation: change, startup: 4}
   - !service: {name: 'ErrDev', operation: change, startup: 4}
   - !service: {name: 'Fax', operation: change, startup: 4}
   - !service: {name: 'fhsvc', operation: change, startup: 4}
   - !service: {name: 'GameInputSvc', operation: change, startup: 4}
   - !service: {name: 'icssvc', operation: change, startup: 4}
   - !service: {name: 'intelpmt', operation: change, startup: 4}
-  - !service: {name: 'IpxlatCfgSvc', operation: change, startup: 4}
   - !service: {name: 'kdnic', operation: change, startup: 4}
-  - !service: {name: 'KtmRm', operation: change, startup: 4}
   - !service: {name: 'LanmanServer', operation: change, startup: 4}
   - !service: {name: 'lfsvc', operation: change, startup: 4}
   - !service: {name: 'lltdio', operation: change, startup: 4}
   - !service: {name: 'lmhosts', operation: change, startup: 4}
   - !service: {name: 'MapsBroker', operation: change, startup: 4}
   - !service: {name: 'McpManagementService', operation: change, startup: 4}
-  - !service: {name: 'MSiSCSI', operation: change, startup: 4}
-  - !service: {name: 'MsKeyboardFilter', operation: change, startup: 4}
   - !service: {name: 'CscService', operation: change, startup: 4}
   - !service: {name: 'MsLldp', operation: change, startup: 4}
   - !service: {name: 'NdisVirtualBus', operation: change, startup: 4}
   - !service: {name: 'ndu', operation: change, startup: 4}
+  - !service: {name: 'NvTelemetryContainer', operation: change, startup: 4}
   - !service: {name: 'NetBIOS', operation: change, startup: 4}
   - !service: {name: 'NetBT', operation: change, startup: 4}
   - !service: {name: 'themes', operation: change, startup: 4}
   - !service: {name: 'onesyncsvc', operation: change, startup: 4}
-  - !service: {name: 'p2pimsvc', operation: change, startup: 4}
-  - !service: {name: 'p2psvc', operation: change, startup: 4}
-  - !service: {name: 'P9RdrService', operation: change, startup: 4}
   - !service: {name: 'pcasvc', operation: change, startup: 4}
-  - !service: {name: 'PeerDistSvc', operation: change, startup: 4}
-  - !service: {name: 'PenService', operation: change, startup: 4}
-  - !service: {name: 'PhoneSvc', operation: change, startup: 4}
   - !service: {name: 'pla', operation: change, startup: 4}
-  - !service: {name: 'PNRPsvc', operation: change, startup: 4}
-  - !service: {name: 'PNRPAutoReg', operation: change, startup: 4}
   - !service: {name: 'PrintDeviceConfigurationService', operation: change, startup: 4}
   - !service: {name: 'PrintNotify', operation: change, startup: 4}
   - !service: {name: 'PrintScanBrokerService', operation: change, startup: 4}
   - !service: {name: 'printworkflowusersvc', operation: change, startup: 4}
   - !service: {name: 'QWAVE', operation: change, startup: 4}
   - !service: {name: 'QwaveDrv', operation: change, startup: 4}
-  - !service: {name: 'RasAcd', operation: change, startup: 4}
-  - !service: {name: 'RasAuto', operation: change, startup: 4}
-  - !service: {name: 'rdpbus', operation: change, startup: 4}
-  - !service: {name: 'RDPDR', operation: change, startup: 4}
-  - !service: {name: 'RdpVideominiport', operation: change, startup: 4}
-  - !service: {name: 'RemoteAccess', operation: change, startup: 4}  
-  - !service: {name: 'RemoteRegistry', operation: change, startup: 4}
-  - !service: {name: 'RetailDemo', operation: change, startup: 4}
-  - !service: {name: 'RmSvc', operation: change, startup: 4}
   - !service: {name: 'rspndr', operation: change, startup: 4}
-  - !service: {name: 'SCardSvr', operation: change, startup: 4}
-  - !service: {name: 'ScDeviceEnum', operation: change, startup: 4}
-  - !service: {name: 'scfilter', operation: change, startup: 4}
-  - !service: {name: 'SCPolicySvc', operation: change, startup: 4}
   - !service: {name: 'semgrsvc', operation: change, startup: 4}
   - !service: {name: 'SensorDataService', operation: change, startup: 4}
   - !service: {name: 'SensorService', operation: change, startup: 4}
   - !service: {name: 'SensrSvc', operation: change, startup: 4}
   - !service: {name: 'SessionEnv', operation: change, startup: 4}
   - !service: {name: 'ShellHWDetection', operation: change, startup: 4}
-  - !service: {name: 'SiSRaid2', operation: change, startup: 4}
-  - !service: {name: 'SiSRaid4', operation: change, startup: 4}
-  - !service: {name: 'SmsRouter', operation: change, startup: 4}
   - !service: {name: 'spooler', operation: change, startup: 4}
-  - !service: {name: 'srv', operation: change, startup: 4}
-  - !service: {name: 'srv2', operation: change, startup: 4}
-  - !service: {name: 'Netlogon', operation: change, startup: 4}
-  - !service: {name: 'SstpSvc', operation: change, startup: 4}
-  - !service: {name: 'RasMan', operation: change, startup: 4}
   - !service: {name: 'stisvc', operation: change, startup: 4}
   - !service: {name: 'svsvc', operation: change, startup: 4}
   - !service: {name: 'SysMain', operation: change, startup: 4}
-  - !service: {name: 'TapiSrv', operation: change, startup: 4}
-  - !service: {name: 'fdc', operation: change, startup: 4}
-  - !service: {name: 'flpydisk', operation: change, startup: 4}
-  - !service: {name: 'sfloppy', operation: change, startup: 4}
-  - !service: {name: 'terminpt', operation: change, startup: 4}
   - !service: {name: 'TermService', operation: change, startup: 4}  
   - !service: {name: 'TrkWks', operation: change, startup: 4}
   - !service: {name: 'troubleshootingsvc', operation: change, startup: 4}
-  - !service: {name: 'TsUsbFlt', operation: change, startup: 4}
-  - !service: {name: 'TsUsbGD', operation: change, startup: 4}
-  - !service: {name: 'tsusbhub', operation: change, startup: 4}
   - !service: {name: 'uhssvc', operation: change, startup: 4}
   - !service: {name: 'umbus', operation: change, startup: 4}
-  - !service: {name: 'UmRdpService', operation: change, startup: 4}
   - !service: {name: 'usbprint', operation: change, startup: 4}
-  - !service: {name: 'VerifierExt', operation: change, startup: 4}
+  - !service: {name: 'vid', operation: change, startup: 4}
   - !service: {name: 'VSS', operation: change, startup: 4}
-  - !service: {name: 'WalletService', operation: change, startup: 4}
-  - !service: {name: 'WarpJITSvc', operation: change, startup: 4}
-  - !service: {name: 'wbengine', operation: change, startup: 4}
-  - !service: {name: 'WbioSrvc', operation: change, startup: 4}
-  - !service: {name: 'wcnfs', operation: change, startup: 4}
+  - !service: {name: 'wbiosrvc', operation: change, startup: 4}
   - !service: {name: 'wdiservicehost', operation: change, startup: 4}
   - !service: {name: 'wdisystemhost', operation: change, startup: 4}
   - !service: {name: 'wecsvc', operation: change, startup: 4}
-  - !service: {name: 'WEPHOSTSVC', operation: change, startup: 4}
   - !service: {name: 'wercplsupport', operation: change, startup: 4}
   - !service: {name: 'WerSvc', operation: change, startup: 4}
   - !service: {name: 'wisvc', operation: change, startup: 4}
   - !service: {name: 'wmiApSrv', operation: change, startup: 4}
-  - !service: {name: 'WMPNetworkSvc', operation: change, startup: 4}
   - !service: {name: 'WPCMonSvc', operation: change, startup: 4}
+  - !service: {name: 'WpnService', operation: change, startup: 4}
   - !service: {name: 'wsearch', operation: change, startup: 4}
   - !powerShell:
       wait: true
       command: |
-       foreach ($t in 'CDPUserSvc','AarSvc','CloudBackupRestoreSvc','PimIndexMaintenanceSvc') {
+       foreach ($t in 'CDPUserSvc','AarSvc','CloudBackupRestoreSvc','onesyncsvc','PrintDeviceConfigurationService') {
            Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\$t" Start 4 -EA 0
            Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services" -EA 0 |
                Where-Object { $_.PSChildName -like ($t + '_*') } |
                ForEach-Object { Set-ItemProperty $_.PSPath Start 4 -EA 0 }
        }
+       
+  # Memory Compression enabled for systems under 12 GB of RAM
+  - !powerShell: 
+    command: |
+      if ((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB -lt 12) {
+        Enable-MMAgent -MC
+        Set-Service SysMain -StartupType Automatic
+      }
 
   - !writeStatus: {status: 'Configuring Features'}
   - !run: {exe: 'DISM.exe', args: '/Online /Disable-Feature /FeatureName:"MediaPlayback" /NoRestart'}
@@ -847,6 +799,9 @@ actions:
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\OneDrive', value: 'DisableLibrariesDefaultSaveToOneDrive', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\SYSTEM', value: 'AllowCrossDeviceClipboard', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Mobility', value: 'CrossDeviceEnabled', type: REG_DWORD, data: '0'}
+  
+  # OLED Theme
+  - !cmd: {command: '"reg import oled.reg', exeDir: true, wait: true, runas: currentUserElevated, option: "oled-theme"}
 
   # Disable CrossDeviceResume
   - !registryValue: {path: 'HKLM\System\ControlSet001\Control\FeatureManagement\Overrides\8\1387020943', value: 'EnabledStateOptions', type: REG_DWORD, data: '0'}
@@ -1095,14 +1050,6 @@ actions:
   - !registryKey: {path: 'HKCR\.txt\ShellNew', operation: 'add'}
   - !registryValue: {path: 'HKCR\.txt\ShellNew', value: 'ItemName', type: REG_EXPAND_SZ, data: '@%SystemRoot%\System32\notepad.exe,-470'}
   - !registryValue: {path: 'HKCR\.txt\ShellNew', value: 'NullFile', type: REG_SZ, data: ''}
-
-  # Steam
-  - !registryValue: {path: 'HKCU\SOFTWARE\Valve\Steam', value: 'SmoothScrollWebViews', type: REG_DWORD, data: '0'}
-  - !registryValue: {path: 'HKCU\SOFTWARE\Valve\Steam', value: 'DWriteEnable', type: REG_DWORD, data: '0'}
-  - !registryValue: {path: 'HKCU\SOFTWARE\Valve\Steam', value: 'StartupMode', type: REG_DWORD, data: '0'}
-  - !registryValue: {path: 'HKCU\SOFTWARE\Valve\Steam', value: 'H264HWAccel', type: REG_DWORD, data: '0'}
-  - !registryValue: {path: 'HKCU\SOFTWARE\Valve\Steam', value: 'GPUAccelWebViews', type: REG_DWORD, data: '0'}
-  - !registryValue: {path: 'HKCU\SOFTWARE\Valve\Steam', value: 'GPUAccelWebViewsV3', type: REG_DWORD, data: '0'}
 
   # NIC
   - !writeStatus: {status: 'Applying Network Settings'}
