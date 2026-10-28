@@ -19,7 +19,7 @@ for %%a in (
 	MinimumIdleTimeoutInMS
 ) do for /f "delims=" %%b in ('reg query "HKLM\SYSTEM\CurrentControlSet\Enum" /s /f "%%a" ^| findstr "HKEY"') do reg delete "%%b" /v "%%a" /f
 
-bcdedit /set disabledynamictick yes
+bcdedit /deletevalue disabledynamictick
 powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 
 reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v EnergyEstimationEnabled /f
