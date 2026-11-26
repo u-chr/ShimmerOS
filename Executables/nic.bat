@@ -50,9 +50,6 @@ for /f "tokens=*" %%a in ('reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSe
     reg add "%%a" /v "EeePhyEnable" /t REG_SZ /d "0" /f 2>nul
     reg add "%%a" /v "EnableGreenEthernet" /t REG_SZ /d "0" /f 2>nul
     reg add "%%a" /v "EnableModernStandby" /t REG_SZ /d "0" /f 2>nul
-    reg add "%%a" /v "*EncapsulatedPacketTaskOffloadNvgre" /t REG_SZ /d "0" /f 2>nul
-    reg add "%%a" /v "*EncapsulatedPacketTaskOffloadVxlan" /t REG_SZ /d "0" /f 2>nul
-    reg add "%%a" /v "*EncapsulatedPacketTaskOffload" /t REG_SZ /d "0" /f 2>nul
     reg add "%%a" /v "GigaLite" /t REG_SZ /d "0" /f 2>nul
     reg add "%%a" /v "PowerDownPll" /t REG_SZ /d "0" /f 2>nul
     reg add "%%a" /v "PowerSavingMode" /t REG_SZ /d "0" /f 2>nul
@@ -109,7 +106,7 @@ for /f "tokens=*" %%a in ('reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSe
     reg add "%%a" /v "TeredoOffload" /t REG_SZ /d "1" /f 2>nul
     reg add "%%a" /v "*QoSOffload" /t REG_SZ /d "1" /f 2>nul
     reg add "%%a" /v "*RSS" /t REG_SZ /d "1" /f 2>nul
-    reg add "%%a" /v "*NumRssQueues" /t REG_SZ /d "1" /f 2>nul
+    reg add "%%a" /v "*NumRssQueues" /t REG_SZ /d "2" /f 2>nul
     reg add "%%a" /v "*RssBaseProcNumber" /t REG_SZ /d "2" /f 2>nul
     reg add "%%a" /v "*FlowControl" /t REG_SZ /d "0" /f 2>nul
     reg add "%%a" /v "WaitAutoNegComplete" /t REG_SZ /d "0" /f 2>nul
@@ -125,7 +122,6 @@ powershell "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing Enabled -Error
 netsh int udp set global uro=enabled
 netsh int tcp set security profiles=disabled
 netsh int tcp set global timestamps=disabled
-netsh int tcp set global autotuninglevel=normal
 netsh int tcp set heuristics disabled
 
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NDIS\Parameters" /v "DefaultPnPCapabilities" /t REG_DWORD /d "24" /f
