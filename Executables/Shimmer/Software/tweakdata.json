@@ -10,7 +10,7 @@
 	"Printing_Support": 0,
 	"MMCSS": 1,
 	"Power_Saving": 1,
-	"Interrupt_Steering": 0,
+	"Interrupt_Steering": 1,
 	"Spectre_and_Meltdown": 1,
 	"Clipboard_History": 0
 }
