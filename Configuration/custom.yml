@@ -387,7 +387,6 @@ actions:
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\I/O System', value: 'DisableDiskCounters', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'EnableWerUserReporting', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'SerializeTimerExpiration', type: REG_DWORD, data: '1'}
-  - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'InterruptSteeringFlags', type: REG_DWORD, data: '17'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'TimerCheckFlags', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'DriveRemappingMitigation', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management', value: 'DisablePageCombining', type: REG_DWORD, data: '1'}
