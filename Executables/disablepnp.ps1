@@ -1,5 +1,4 @@
 $devices = @(
-    "High precision event timer",
     "Intel(R) Platform Monitoring Technology Device",
     "Microsoft GS Wavetable Synth",
     "Microsoft Hyper-V Virtualization Infrastructure Driver",

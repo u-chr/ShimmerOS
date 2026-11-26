@@ -46,10 +46,11 @@ for /f "tokens=*" %%s in ('reg query "HKLM\SYSTEM\CurrentControlSet\Enum" /s /f 
     reg add "%%s" /v "DisableD3Cold" /t REG_DWORD /d "1" /f
 )
 
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WmiAcpi" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\acpipagr" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AcpiPmi" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\acpitime" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PRM" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\GpuEnergyDrv" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\GraphicsPerfSvc" /v "Start" /t REG_DWORD /d "4" /f
+
+powershell.exe -NoProfile -Command "if ((Get-CimInstance Win32_SystemEnclosure).ChassisTypes[0] -le 7) {Set-Service -Name 'WmiAcpi' -StartupType Disabled -ErrorAction Ignore; Set-Service -Name 'msisadrv' -StartupType Disabled -ErrorAction Ignore; Get-PnpDevice -FriendlyName 'PCI standard ISA bridge' -ErrorAction Ignore | Disable-PnpDevice -Confirm:$false -ErrorAction Ignore; Get-PnpDevice -FriendlyName 'Microsoft Windows Management Interface for ACPI' -ErrorAction Ignore | Disable-PnpDevice -Confirm:$false -ErrorAction Ignore}"

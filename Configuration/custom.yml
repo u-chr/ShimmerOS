@@ -59,42 +59,45 @@ actions:
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System', value: 'EnableLUA', type: REG_DWORD, data: '0', option: "disable-uac"}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System', value: 'PromptOnSecureDesktop', type: REG_DWORD, data: '0', option: "disable-uac"}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System', value: 'ConsentPromptBehaviorAdmin', type: REG_DWORD, data: '0', option: "disable-uac"}
-  - !powerShell: {command: 'C:\Shimmer\Temp\set-state.ps1 -Set UAC=0', runas: currentUserElevated, option: "disable-uac", wait: true}
+  - !powerShell: {command: 'C:\Shimmer\Temp\set-state.ps1 -Set UAC=0', option: "disable-uac", wait: true}
   
   # Download Software
   - !status: {status: 'Downloading VCRedist'}
   - !download: {git: 'https://github.com/abbodi1406/vcredist', regex: '^VisualCppRedist_AIO_x86_x64\.exe$', destination: '%temp%\vcredist.exe', overwrite: true}
+
   - !status: {status: 'Installing VCRedist'}
-  - !cmd: {command: '"%temp%\vcredist.exe" /ai /gm2', runas: currentUserElevated, wait: true}
+  - !cmd: {command: '"%temp%\vcredist.exe" /ai /gm2', wait: true}
 
   - !status: {status: 'Downloading DirectX'}
   - !download: {url: 'https://download.microsoft.com/download/8/4/A/84A35BF1-DAFE-4AE8-82AF-AD2AE20B6B14/directx_Jun2010_redist.exe', destination: '%temp%\DirectX.exe', overwrite: true}
   
   - !status: {status: 'Installing DirectX'}
-  - !cmd: {command: '"%temp%\DirectX.exe" /Q /C /T:%temp%\DirectX', runas: currentUserElevated, wait: true}
-  - !cmd: {command: '"%temp%\DirectX\DXSETUP.exe" /silent', runas: currentUserElevated, wait: true}
+  - !cmd: {command: '"%temp%\DirectX.exe" /Q /C /T:%temp%\DirectX', wait: true}
+  - !cmd: {command: '"%temp%\DirectX\DXSETUP.exe" /silent', wait: true}
   - !file: {path: '%temp%\DirectX'}
 
   - !status: {status: 'Downloading 7-Zip'}
   - !download: {git: 'https://github.com/ip7z/7zip', regex: '^7z.*-x64\.exe$', destination: '%temp%\7Zip.exe', overwrite: true}
   
   - !status: {status: 'Installing 7-Zip'}
-  - !cmd: {command: '"%temp%\7Zip.exe" /S', runas: currentUserElevated, wait: true}
+  - !cmd: {command: '"%temp%\7Zip.exe" /S', wait: true}
 
   - !status: {status: 'Downloading StartAllBack'}
   - !download: {url: 'https://www.startallback.com/download.php', destination: '%temp%\StartAllBack.exe', option: "install-startallback", overwrite: true}
   
   - !status: {status: 'Installing StartAllBack'}
-  - !cmd: {command: '"%temp%\StartAllBack.exe" /install /silent /allusers', runas: currentUserElevated, option: "install-startallback", wait: true}
   - !registryValue: {path: 'HKCU\Software\StartIsBack', value: 'LegacyTaskbar', type: REG_DWORD, data: '0', option: "install-startallback"}
   - !registryValue: {path: 'HKCU\Software\StartIsBack', value: 'FrameStyle', type: REG_DWORD, data: '0', option: "install-startallback"}
+  - !registryValue: {path: 'HKCU\Software\StartIsBack', value: 'WelcomeShown', type: REG_DWORD, data: '3', option: "install-startallback"}
+  - !cmd: {command: '"%temp%\StartAllBack.exe" /install /silent /allusers', option: "install-startallback", wait: true}
 
   - !status: {status: 'Downloading Shimmer Software'}
   - !download: {url: 'https://github.com/loplxl/ShimmerOS/releases/latest/download/Shimmer.zip', destination: '%temp%\Shimmer.zip', overwrite: true}
+
   - !status: {status: 'Installing Shimmer Software'}
-  - !cmd: {command: 'powershell -Command "Expand-Archive -Path \"%temp%\Shimmer.zip\" -DestinationPath \"%temp%\extracted\" -Force"', runas: currentUserElevated, wait: true}
-  - !cmd: {command: 'if not exist "C:\Shimmer\Software" mkdir "C:\Shimmer\Software"', runas: currentUserElevated, wait: true}
-  - !cmd: {command: 'xcopy "%temp%\extracted\*" "C:\Shimmer" /E /H /Y', runas: currentUserElevated, wait: true}
+  - !cmd: {command: 'powershell -Command "Expand-Archive -Path \"%temp%\Shimmer.zip\" -DestinationPath \"%temp%\extracted\" -Force"', wait: true}
+  - !cmd: {command: 'if not exist "C:\Shimmer\Software" mkdir "C:\Shimmer\Software"', wait: true}
+  - !cmd: {command: 'xcopy "%temp%\extracted\*" "C:\Shimmer" /E /H /Y', wait: true}
   - !file: {path: '%temp%\Shimmer.zip'}
   - !file: {path: '%temp%\extracted'}
   
@@ -108,7 +111,7 @@ actions:
 
   # Remove OneDrive
   - !writeStatus: {status: 'Removing OneDrive'}
-  - !run: {exeDir: true, exe: 'onedrive.bat', runas: currentUserElevated}  
+  - !run: {exe: 'onedrive.bat', exeDir: true}  
   
   # Microsoft Edge
   - !writeStatus: {status: 'Removing Microsoft Edge'}
@@ -355,24 +358,23 @@ actions:
   - !run: {exe: 'bcdedit', args: '/set bootmenupolicy Legacy'}
   - !run: {exe: 'bcdedit', args: '/deletevalue useplatformclock'}
   - !run: {exe: 'bcdedit', args: '/deletevalue useplatformtick'}
-  - !run: {exe: 'bcdedit', args: '/set nx optin'}
-  - !run: {exe: 'bcdedit', args: '/set disableelamdrivers yes'}
-  - !run: {exe: 'bcdedit', args: '/set isolatedcontext no'}
+  - !run: {exe: 'bcdedit', args: '/set nx optIn'}
+  - !run: {exe: 'bcdedit', args: '/set disableelamdrivers Yes'}
+  - !run: {exe: 'bcdedit', args: '/set isolatedcontext No'}
   - !run: {exe: 'bcdedit', args: '/set vsmlaunchtype Off'}
   
   # Disable Devices
   - !writeStatus: {status: 'Disabling Devices'}
-  - !powerShell: {command: '.\disablepnp.ps1', wait: true, runas: currentUserElevated, exeDir: true, wait: true}
+  - !powerShell: {command: '.\disablepnp.ps1', wait: true, exeDir: true, wait: true}
      
   # Power Saving
   - !writeStatus: {status: 'Disabling Power Saving'}
-  - !run: {exe: 'power-saving.bat', runas: currentUserElevated, exeDir: true, option: "disable-power-saving", wait: true} 
-  - !powerShell: {command: '.\powerplan.ps1', runas: currentUserElevated, exeDir: true, option: "disable-power-saving", wait: true}
-  - !powerShell: {command: 'C:\Shimmer\Temp\set-state.ps1 -Set Power_Saving=0', runas: currentUserElevated, option: "disable-power-saving", wait: true}
+  - !run: {exe: 'power-saving.bat', exeDir: true, option: "disable-power-saving", wait: true} 
+  - !powerShell: {command: '.\powerplan.ps1', exeDir: true, option: "disable-power-saving", wait: true}
+  - !powerShell: {command: 'C:\Shimmer\Temp\set-state.ps1 -Set Power_Saving=0', option: "disable-power-saving", wait: true}
 
   # Registry Tweaks
   - !writeStatus: {status: 'Registry Tweaks'}
-  - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl', value: 'Win32PrioritySeparation', type: REG_DWORD, data: '36'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control', value: 'SvcHostSplitThresholdInKB', type: REG_DWORD, data: '4294967295'}
   
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', value: 'DisableWpbtExecution', type: REG_DWORD, data: '1'}
@@ -385,7 +387,9 @@ actions:
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\I/O System', value: 'DisableDiskCounters', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'EnableWerUserReporting', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'SerializeTimerExpiration', type: REG_DWORD, data: '1'}
+  - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'InterruptSteeringFlags', type: REG_DWORD, data: '17'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'TimerCheckFlags', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel', value: 'DriveRemappingMitigation', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management', value: 'DisablePageCombining', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management', value: 'TrackLockedPages', type: REG_DWORD, data: '0'}
 
@@ -398,9 +402,7 @@ actions:
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Diagnostics\Performance', value: 'DisableDiagnosticTracing', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control', value: 'DisableRPCOverTCP', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\CrashControl', value: 'AutoReboot', type: REG_DWORD, data: '0'}
-  - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\CrashControl', value: 'CrashDumpEnabled', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\CrashControl', value: 'DisplayParameters', type: REG_DWORD, data: '1'}
-  - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\CrashControl', value: 'LogEvent', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Wdf', value: 'WdfGlobalLogsDisabled', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Wdf', value: 'WdfGlobalSleepStudyDisabled', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server', value: 'fDenyTSConnections', type: REG_DWORD, data: '1'}
@@ -415,6 +417,9 @@ actions:
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows', value: 'DesktopHeapLogging', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows', value: 'RITdemonTimerPowerSaveCoalescing', type: REG_DWORD, data: '4294967295'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows', value: 'RITdemonTimerPowerSaveElapse', type: REG_DWORD, data: '10'}
+  
+  # Automatic Optimal Win32PrioritySeperation Determination
+  - !powerShell: {command: '$m=(Get-CimInstance Win32_Processor|Measure L3CacheSize -Max).Maximum/1KB;$v=if($m-lt 16){24}elseif($m-lt 33){40}else{36};Set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl Win32PrioritySeparation $v -Type DWord;"L3: $m MB -> $v"', wait: true}
   
   # Fix for rendering issues related to some Chromium based applications on 24H2+
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\DWM', value: 'OverlayMinFPS', type: REG_DWORD, data: '0'}
@@ -435,7 +440,7 @@ actions:
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\KernelShadowStacks', value: 'Enabled', type: REG_DWORD, data: '0', option: "disable-mitigations"}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Lsa', value: 'RunAsPPL', type: REG_DWORD, data: '0', option: "disable-mitigations"}
   
-  - !powerShell: {command: 'C:\Shimmer\Temp\set-state.ps1 -Set Mitigations=0,Spectre_and_Meltdown=0,VBS=0', runas: currentUserElevated, option: "disable-mitigations", wait: true}
+  - !powerShell: {command: 'C:\Shimmer\Temp\set-state.ps1 -Set Mitigations=0,Spectre_and_Meltdown=0,VBS=0', option: "disable-mitigations", wait: true}
    
   # CTFMon
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Input', value: 'InputServiceEnabled', type: REG_DWORD, data: '0'}
@@ -457,7 +462,7 @@ actions:
     runas: currentUserElevated
   
   # Disable DMA Remapping
-  - !cmd: {command: 'for /f %i in (''reg query "HKLM\SYSTEM\CurrentControlSet\Services" /s /f "DmaRemappingCompatible" ^| find /i "Services\" '') do reg add "%i" /v "DmaRemappingCompatible" /t REG_DWORD /d 0 /f', exeDir: true, wait: true, runas: currentUserElevated}
+  - !cmd: {command: 'for /f %i in (''reg query "HKLM\SYSTEM\CurrentControlSet\Services" /s /f "DmaRemappingCompatible" ^| find /i "Services\" '') do reg add "%i" /v "DmaRemappingCompatible" /t REG_DWORD /d 0 /f', exeDir: true, wait: true}
     
   # Disable Enumeration Policy
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Kernel DMA Protection', value: 'DeviceEnumerationPolicy', type: REG_DWORD, data: '0'}
@@ -704,6 +709,7 @@ actions:
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced', value: 'Start_IrisRecommendations', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced', value: 'Start_TrackEnabled', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced', value: 'Start_TrackProgs', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\BamThrottling', value: 'DisableWindowHinting', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers', value: 'DisableAutoplay', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates', value: 'ShortcutNameTemplate', type: REG_SZ, data: '"%s.lnk"'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Serialize', value: 'StartupDelayInMSec', type: REG_DWORD, data: '0'}
@@ -799,9 +805,6 @@ actions:
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\OneDrive', value: 'DisableLibrariesDefaultSaveToOneDrive', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\SYSTEM', value: 'AllowCrossDeviceClipboard', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Mobility', value: 'CrossDeviceEnabled', type: REG_DWORD, data: '0'}
-  
-  # OLED Theme
-  - !cmd: {command: '"reg import oled.reg', exeDir: true, wait: true, runas: currentUserElevated, option: "oled-theme"}
 
   # Disable CrossDeviceResume
   - !registryValue: {path: 'HKLM\System\ControlSet001\Control\FeatureManagement\Overrides\8\1387020943', value: 'EnabledStateOptions', type: REG_DWORD, data: '0'}
@@ -815,8 +818,8 @@ actions:
   - !taskKill: {name: 'SystemSettings'}
   - !taskKill: {name: 'ShellExperienceHost'}
   - !run: {exe: 'explorer.exe', wait: false}
-  - !powerShell: {command: '.\wallpaper.ps1 -Mode Desktop -ImagePath $env:systemroot\Web\Wallpaper\Shimmer\img0.jpg', exeDir: true, runas: currentUserElevated}
-  - !powerShell: {command: '.\wallpaper.ps1 -Mode LockScreen -ImagePath $env:systemroot\Web\Wallpaper\Shimmer\img0.jpg', exeDir: true, runas: currentUserElevated}
+  - !powerShell: {command: '.\wallpaper.ps1 -Mode Desktop -ImagePath $env:systemroot\Web\Wallpaper\Shimmer\img0.jpg', exeDir: true}
+  - !powerShell: {command: '.\wallpaper.ps1 -Mode LockScreen -ImagePath $env:systemroot\Web\Wallpaper\Shimmer\img0.jpg', exeDir: true}
 
   # Scheduled Tasks
   - !writeStatus: {status: 'Disabling Scheduled Tasks'}
@@ -936,7 +939,7 @@ actions:
   - !scheduledTask: {path: '\Microsoft\Windows\WindowsUpdate\sihpostreboot', operation: disable, ignoreErrors: true}
 
   # Clean Context Menus
-  - !cmd: {command: '"reg import runasti.reg', exeDir: true, wait: true, runas: currentUserElevated}
+  - !cmd: {command: '"reg import runasti.reg', exeDir: true, wait: true}
   - !registryKey: {path: 'HKCR\*\shell\pintohomefile'}
   - !registryKey: {path: 'HKCR\*\shellex\ContextMenuHandlers\ModernSharing'}
   - !registryKey: {path: 'HKCR\*\shellex\ContextMenuHandlers\Sharing'}
@@ -1053,7 +1056,7 @@ actions:
 
   # NIC
   - !writeStatus: {status: 'Applying Network Settings'}
-  - !run: {exeDir: true, exe: 'nic.bat', wait: true, runas: currentUserElevated}
+  - !run: {exeDir: true, exe: 'nic.bat', wait: true}
      
   # AppX
   - !writeStatus: {status: 'Removing AppX Packages'}
@@ -1103,7 +1106,6 @@ actions:
   - !appx: {name: '*Microsoft.WindowsSoundRecorder*', ignoreErrors: true}
   - !appx: {name: '*Microsoft.Xbox*', ignoreErrors: true}
   - !appx: {name: '*Microsoft.YourPhone*', ignoreErrors: true}
-  - !appx: {name: '*Microsoft.ZuneMusic*', ignoreErrors: true}
   - !appx: {name: '*Microsoft.ZuneVideo*', ignoreErrors: true}
   - !appx: {name: '*MicrosoftCorporationII.QuickAssist*', ignoreErrors: true}
   - !appx: {name: '*MixedReality.Portal*', ignoreErrors: true}
@@ -1118,9 +1120,9 @@ actions:
   - !appx: {name: '*Microsoft.Windows.NarratorQuickStart*', ignoreErrors: true}
   - !appx: {name: '*Microsoft.GetStarted*', ignoreErrors: true}
     
-  - !powerShell: {command: 'Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*MSTeams*" | Remove-AppxProvisionedPackage -Online', runas: currentUserElevated, ignoreErrors: true}
-  - !powerShell: {command: 'Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*MicrosoftWindows.Client.WebExperience*" | Remove-AppxProvisionedPackage -Online', runas: currentUserElevated, ignoreErrors: true}
-  - !powerShell: {command: 'Get-AppxPackage *windowscommunicationsapps* | Remove-AppxPackage', runas: currentUserElevated, ignoreErrors: true}
+  - !powerShell: {command: 'Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*MSTeams*" | Remove-AppxProvisionedPackage -Online', ignoreErrors: true}
+  - !powerShell: {command: 'Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*MicrosoftWindows.Client.WebExperience*" | Remove-AppxProvisionedPackage -Online', ignoreErrors: true}
+  - !powerShell: {command: 'Get-AppxPackage *windowscommunicationsapps* | Remove-AppxPackage', ignoreErrors: true}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications\MicrosoftWindows.Client.CBS_cw5n1h2txyewy', value: 'Disabled', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications\MicrosoftWindows.Client.CBS_cw5n1h2txyewy', value: 'DisabledByUser', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Communications', value: 'ConfigureChatAutoInstall', data: '0', type: REG_DWORD}
@@ -1129,7 +1131,7 @@ actions:
   # Telemetry
   - !writeStatus: {status: 'Disabling Telemetry'}
   
-  - !powerShell: {command: "Set-NetFirewallRule -DisplayGroup 'Network Discovery' -Enabled 'False'", runas: currentUserElevated, ignoreErrors: true}
+  - !powerShell: {command: "Set-NetFirewallRule -DisplayGroup 'Network Discovery' -Enabled 'False'", ignoreErrors: true}
   - !cmd: {command: 'echo y| wevtutil sl Microsoft-Windows-SleepStudy/Diagnostic /e:false'}
   - !cmd: {command: 'echo y| wevtutil sl Microsoft-Windows-Kernel-Processor-Power/Diagnostic /e:false'}
   - !cmd: {command: 'echo y| wevtutil sl Microsoft-Windows-UserModePowerService/Diagnostic /e:false'}
@@ -1315,11 +1317,11 @@ actions:
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer', value: 'DisableLockScreenAppNotifications', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications', value: 'NoTileApplicationNotification', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer', value: 'NoUseStoreOpenWith', type: REG_DWORD, data: '1'}
-  - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat', value: 'DisablePropPage', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat', value: 'AllowTelemetry', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\Remote Assistance', value: 'fAllowToGetHelp', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\StorageSense', value: 'AllowStorageSenseGlobal', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Input', value: 'IsInputAppPreloadEnabled', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Bluetooth', value: 'AllowAdvertising', type: REG_DWORD, data: '0'}
   
   # Delete the defaultuser0 user
   - !cmd: {command: 'net user defaultuser0 /delete'}
@@ -1373,7 +1375,7 @@ actions:
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Pro Audio', value: 'Priority', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Pro Audio', value: 'Scheduling Category', type: REG_SZ, data: 'Medium'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Pro Audio', value: 'Priority When Yielded', type: REG_DWORD, data: '1'}
-  - !powerShell: {command: '.\mmcss.ps1', wait: true, runas: currentUserElevated, exeDir: true, wait: true}
+  - !powerShell: {command: '.\mmcss.ps1', exeDir: true, wait: true}
   
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation', value: 'Manufacturer', type: REG_SZ, data: 'u_chr'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation', value: 'Model', type: REG_SZ, data: 'ShimmerOS'}
